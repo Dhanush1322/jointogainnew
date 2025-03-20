@@ -1,0 +1,76 @@
+.level-container {
+    padding: 30px 130px;
+    background-color: #f9f9f9;
+}
+
+.level-container h1 {
+    text-align: center;
+    font-size: 30px;
+}
+
+.level-list, .level-list1 {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.level-list1 {
+    justify-content: center; /* Centers the divs horizontally */
+    gap: 150px; /* Adds spacing between the divs */
+    margin-top: 20px;
+}
+
+.level-1 {
+    border-radius: 20px;
+    width: 300px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.level-1 .button {
+    background-color: green;
+    width: 100px;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 0 auto 10px; /* Center the button */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.button {
+    background-color: #0072a0;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* 🔹 Mobile View - Adjustments Only */
+@media (max-width: 768px) {
+    .level-container {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .level-list, .level-list1 {
+        display: flex;
+        flex-direction: column; /* Stack levels vertically */
+        align-items: center;
+        gap: 20px;
+    }
+
+    .level-1 {
+        width: 90%; /* Ensures it fits within mobile screen */
+        max-width: 350px; /* Prevents oversized divs */
+        margin-bottom: 15px;
+        padding: 15px;
+    }
+
+    .level-1 h2 {
+        font-size: 22px;
+    }
+
+    .level-1 h3 {
+        font-size: 18px;
+    }
+}

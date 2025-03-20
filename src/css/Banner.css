@@ -1,0 +1,112 @@
+/* Banner.css */
+.banner-container {
+  margin: 0;
+  padding: 30px 130px;
+  background-color: #F5F7FA; /* Light background */
+  display: flex;
+  justify-content: center;
+}
+
+/* Flex wrapper for text and image */
+.banner-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* Text Section */
+.banner-text {
+  flex: 1;
+  max-width: 800px;
+}
+
+.banner-text h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+}
+
+.banner-text h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #4CAF4F; /* Green */
+  margin-bottom: 15px;
+}
+
+.banner-text p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Image Section */
+.banner-image {
+  flex: 1;
+  text-align: center;
+}
+
+.banner-image img {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .banner-container {
+    padding: 30px 60px; /* Reduce padding for tablets */
+  }
+  .banner-wrapper {
+    flex-direction: column;
+    text-align: center;
+  }
+  .banner-text {
+    max-width: 100%;
+  }
+  .banner-image img {
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .banner-container {
+    padding: 20px; /* Further reduce padding for smaller screens */
+  }
+  .banner-wrapper {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .banner-text h1 {
+    font-size: 28px;
+  }
+  .banner-text h2 {
+    font-size: 24px;
+  }
+  .banner-text p {
+    font-size: 14px;
+  }
+  .banner-image img {
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-container {
+    padding: 15px;
+  }
+  .banner-text h1 {
+    font-size: 24px;
+  }
+  .banner-text h2 {
+    font-size: 20px;
+  }
+  .banner-text p {
+    font-size: 13px;
+  }
+  .banner-image img {
+    max-width: 300px;
+  }
+}
