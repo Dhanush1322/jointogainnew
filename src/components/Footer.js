@@ -52,7 +52,7 @@ function Footer() {
           </div>
 
           {/* Stay Updated */}
-          <div style={subscribeSectionStyle}>
+          <div className="button-subscrib" style={subscribeSectionStyle}>
             <h2>Stay Updated</h2>
             <input type="email" placeholder="Your email address" style={inputStyle} />
             <button style={buttonStyle}>Subscribe</button>
@@ -87,6 +87,7 @@ function Footer() {
             .subscribe-section button {
               width: 100%;
             }
+           
           }
         `}
       </style>
@@ -179,6 +180,7 @@ const buttonStyle = {
   backgroundColor: '#D9D9D9',
   color: 'black',
   cursor: 'pointer'
+  
 };
 
 export default Footer;

@@ -97,4 +97,8 @@
     width: 100%; /* Make button full width */
     padding: 12px;
   }
+  .stability-plans-image img{ 
+    width: 400px;
+   
+  }
 }
