@@ -42,7 +42,7 @@ const Sidebar = ({  handleLogout, isOpen}) => {
         </li>
         <hr className="sidebar-divider" />
         
-        <li className="sidebar-item"><Link to="/KYC"><User size={20} /> KYC</Link></li>
+        <li className="sidebar-item"><Link to="/Kyc"><User size={20} /> KYC</Link></li>
         <hr className="sidebar-divider" />
         
         <li className="sidebar-item" onClick={() => toggleMenu('team')}>
@@ -51,9 +51,9 @@ const Sidebar = ({  handleLogout, isOpen}) => {
           </div>
           {activeMenu === 'team' && (
             <ul className="submenu">
-              <li className="submenu-item"><Link to="/AddMember"><Edit size={18} /> Add New Member</Link></li>
+              <li className="submenu-item"><Link to="/AddNewMember"><Edit size={18} /> Add New Member</Link></li>
               <li className="submenu-item"><Link to="/ViewMatrix"><Eye size={18} /> View Matrix</Link></li>
-              <li className="submenu-item"><Link to="/Downline"><Eye size={18} /> Downline Member</Link></li>
+              <li className="submenu-item"><Link to="/Dowline"><Eye size={18} /> Downline Member</Link></li>
             </ul>
           )}
         </li>
@@ -65,7 +65,7 @@ const Sidebar = ({  handleLogout, isOpen}) => {
           </div>
           {activeMenu === 'account' && (
             <ul className="submenu">
-              <li className="submenu-item"><Link to="/Transactions"><Edit size={18} /> Account Transaction</Link></li>
+              <li className="submenu-item"><Link to="/AccountTransaction"><Edit size={18} /> Account Transaction</Link></li>
               <li className="submenu-item"><Link to="/WithdrawDetails"><Eye size={18} /> Withdraw Details</Link></li>
             </ul>
           )}

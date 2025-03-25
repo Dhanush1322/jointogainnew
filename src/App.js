@@ -1,18 +1,17 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+
 import Home from "./pages/Home";
 import "./App.css";
 import DashboardPage from "./dashboard/pages/DashboardPage";
-import ActiveUser from "./dashboard/pages/ActiveUser";
-import AddProducts from "./dashboard/pages/AddProducts";
-import ProductList from "./dashboard/pages/ProductList";
-import OrderList from "./dashboard/pages/OrderList";
+
 import EditProfile from "./dashboard/pages/EditProfile";
-
+import Kyc from "./dashboard/pages/Kyc";
 import ChangePassword from "./dashboard/pages/ChangePassword";
-
+import AddNewMember from "./dashboard/pages/AddNewMember";
+import ViewMatrix from "./dashboard/pages/ViewMatrix";
+import Dowline from "./dashboard/pages/Dowline";
+import AccountTransaction from "./dashboard/pages/AccountTransaction";
 const App = () => {
   return (
     <div className="app-container">
@@ -25,10 +24,12 @@ const App = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/EditProfile" element={<EditProfile />} />
           <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/user-list" element={<ActiveUser />} />
-          <Route path="/add-products" element={<AddProducts />} />
-          <Route path="/product-list" element={<ProductList />} />
-          <Route path="/order-list" element={<OrderList />} />
+          <Route path="/Kyc" element={<Kyc />} />
+          <Route path="/AddNewMember" element={<AddNewMember />} />
+          <Route path="/ViewMatrix" element={<ViewMatrix />} />
+          <Route path="/Dowline" element={<Dowline />} />
+          <Route path="/AccountTransaction" element={<AccountTransaction />} />
+         
          
         </Routes>
        
