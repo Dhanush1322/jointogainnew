@@ -22,8 +22,8 @@ function AddNewMemberForm() {
   const [agree, setAgree] = useState(false);
 
   return (
-    <Container maxWidth="md" sx={{ p: 4, minHeight: "100vh" }}>
-      <Box sx={{ p: 4, boxShadow: 3, borderRadius: 2, bgcolor: "#fff" ,mt:'40px;'}}>
+    <Container maxWidth={false} disableGutters sx={{ mb:'30px', minHeight: "100vh" }}>
+      <Box sx={{ width: "100%", p: 4, boxShadow: 3, borderRadius: 2, bgcolor: "#fff" }}>
         <Typography variant="h5" align="center" gutterBottom>
           Add New Member
         </Typography>
@@ -72,7 +72,7 @@ function AddNewMemberForm() {
           control={<Checkbox checked={agree} onChange={(e) => setAgree(e.target.checked)} />}
           label="I hereby agree to Terms and Conditions"
         />
-        <Button fullWidth variant="contained" color="primary" sx={{ mt: 2 ,background:'#1a1f36'}}>
+        <Button fullWidth variant="contained" color="primary" sx={{ mt: 2, background: '#1a1f36' }}>
           Submit
         </Button>
       </Box>

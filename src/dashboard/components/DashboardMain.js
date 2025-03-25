@@ -5,17 +5,14 @@ import "./DashboardMain.css";
 
 const DashboardMain = () => {
   const stats = [
-    { title: "Total Users", count: 3000, icon: <People fontSize="large" />, color: "#ffb901" },
-    { title: "Total Products", count: 150, icon: <ShoppingCart fontSize="large" />, color: "#ffb901" },
-    { title: "ROI Income", count: "Rs. 10,000.00", icon: <MonetizationOn fontSize="large" />, color: "#ffb901" },
-    { title: "Level Income", count: "Rs. 49,000.00", icon: <MonetizationOn fontSize="large" />, color: "#ffb901" },
-    { title: "Today's Earning", count: "Rs. 0", icon: <AccountBalanceWallet fontSize="large" />, color: "#ffb901" },
-    { title: "Total Earning", count: "Rs. 59,000.00", icon: <AccountBalanceWallet fontSize="large" />, color: "#ffb901" },
-    { title: "My Investment", count: "Rs. 1,000,000", icon: <AccountBalanceWallet fontSize="large" />, color: "#ffb901" },
-    { title: "Direct Referrals", count: 10, icon: <People fontSize="large" />, color: "#ffb901" },
-    { title: "Wallet Balance", count: "Rs. 0", icon: <AccountBalanceWallet fontSize="large" />, color: "#ffb901" },
-    { title: "Total Withdrawals", count: "Rs. 0.0", icon: <AccountBalanceWallet fontSize="large" />, color: "#ffb901" },
-    { title: "Rank", count: "Gold", icon: <Star fontSize="large" />, color: "#ffb901" }
+    { title: "Total Users", count: 3000, icon: <People fontSize="large" />, color: "#f5ee24" },
+   { title: "ROI Income", count: "Rs. 10,000.00", icon: <MonetizationOn fontSize="large" />, color: "#f5ee24" },
+    { title: "Level Income", count: "Rs. 49,000.00", icon: <MonetizationOn fontSize="large" />, color: "#f5ee24" },
+     { title: "Total Earning", count: "Rs. 59,000.00", icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
+    { title: "My Investment", count: "Rs. 1,000,000", icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
+    { title: "Direct Referrals", count: 10, icon: <People fontSize="large" />, color: "#f5ee24" },
+    { title: "Total Withdrawals", count: "Rs. 0.0", icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
+    { title: "Rank", count: "Gold", icon: <Star fontSize="large" />, color: "#f5ee24" }
   ];
 
   return (

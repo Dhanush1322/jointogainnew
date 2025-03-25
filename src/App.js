@@ -12,6 +12,9 @@ import AddNewMember from "./dashboard/pages/AddNewMember";
 import ViewMatrix from "./dashboard/pages/ViewMatrix";
 import Dowline from "./dashboard/pages/Dowline";
 import AccountTransaction from "./dashboard/pages/AccountTransaction";
+import WithdrawDetails from "./dashboard/pages/WithdrawDetails";
+import ReTopUp from "./dashboard/pages/ReTopUp";
+import MyInvestments from "./dashboard/pages/MyInvestments";
 const App = () => {
   return (
     <div className="app-container">
@@ -29,8 +32,9 @@ const App = () => {
           <Route path="/ViewMatrix" element={<ViewMatrix />} />
           <Route path="/Dowline" element={<Dowline />} />
           <Route path="/AccountTransaction" element={<AccountTransaction />} />
-         
-         
+          <Route path="/WithdrawDetails" element={<WithdrawDetails />} />
+          <Route path="/ReTopUp" element={<ReTopUp />} />
+          <Route path="/MyInvestments" element={<MyInvestments />} />
         </Routes>
        
       </Router>

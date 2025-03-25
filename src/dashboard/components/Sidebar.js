@@ -78,8 +78,8 @@ const Sidebar = ({  handleLogout, isOpen}) => {
           </div>
           {activeMenu === 'investments' && (
             <ul className="submenu">
-              <li className="submenu-item"><Link to="/ReTopup"><Edit size={18} /> Re Topup</Link></li>
-              <li className="submenu-item"><Link to="/MyInvestment"><Eye size={18} /> My Investment</Link></li>
+              <li className="submenu-item"><Link to="/ReTopUp"><Edit size={18} /> Re Topup</Link></li>
+              <li className="submenu-item"><Link to="/MyInvestments"><Eye size={18} /> My Investment</Link></li>
             </ul>
           )}
         </li>
