@@ -7,14 +7,23 @@ import './DashboardPage.css';
 
 const DashboardPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
   const navigate = useNavigate();
 
-  
+  // ✅ Check if the token is missing and redirect to login
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      navigate("/"); // Redirect to login if no token
+    }
+  }, [navigate]);
+
   // ✅ Logout function - Remove token & Redirect
   const handleLogout = () => {
-    localStorage.removeItem("authToken"); // Remove token
-    navigate("/admin"); // Redirect to login page
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user_name");
+    localStorage.removeItem("_id");
+    localStorage.removeItem("user_id");
+    navigate("/"); // Redirect to login page
   };
 
   const toggleSidebar = () => {

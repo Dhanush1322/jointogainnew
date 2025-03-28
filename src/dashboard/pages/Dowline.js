@@ -6,32 +6,44 @@ import './DashboardPage.css';
 
 import DownlineTable from '../components/DownlineTable';
 function Dowline() {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-      const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-      const navigate = useNavigate();
-    
-      // ✅ Logout function - Remove token & Redirect
-      const handleLogout = () => {
-        localStorage.removeItem("authToken"); // Remove token
-        navigate("/admin"); // Redirect to login page
-      };
-    
-      const toggleSidebar = () => {
-        setIsSidebarOpen(!isSidebarOpen);
-      };
-    
-      // Update windowWidth state on resize
-      useEffect(() => {
-        const handleResize = () => setWindowWidth(window.innerWidth);
-        window.addEventListener('resize', handleResize);
-    
-        // Cleanup on unmount
-        return () => window.removeEventListener('resize', handleResize);
-      }, []);
-    
-      // Compute marginLeft based on window width
-      const marginLeft = windowWidth <= 768 ? '4px' : '260px';
-    
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const navigate = useNavigate();
+
+  // ✅ Check if the token is missing and redirect to login
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      navigate("/"); // Redirect to login if no token
+    }
+  }, [navigate]);
+
+  // ✅ Logout function - Remove token & Redirect
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user_name");
+    localStorage.removeItem("_id");
+    localStorage.removeItem("user_id");
+    navigate("/"); // Redirect to login page
+  };
+
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  // Update windowWidth state on resize
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup on unmount
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Compute marginLeft based on window width
+  const marginLeft = windowWidth <= 768 ? '4px' : '260px';
+
   return (
     <div className="dashboard">
       {/* ✅ Pass handleLogout to Sidebar */}

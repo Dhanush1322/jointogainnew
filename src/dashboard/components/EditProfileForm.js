@@ -1,45 +1,149 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Card, CardContent, Typography, Grid, Button, TextField } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-
+import axios from "axios";
+import Swal from "sweetalert2";
 const EditProfileForm = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md")); // Detect mobile view
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  // State to manage form inputs
+  // Get user ID and token from local storage
+  const userId = localStorage.getItem("_id");
+  const token = localStorage.getItem("accessToken");
+
+  console.log("Retrieved User ID:", userId);
+  console.log("Retrieved Access Token:", token);
+
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
-    name: "K S SUNIL",
-    email: "ks.sunilrnr@gmail.com",
-    gender: "Male",
-    state: "Karnataka",
-    address: "D C M TOWNSHIP",
-    mobile: "9620171587",
+    name: "",
+    email: "",
+    gender: "",
+    state: "",
+    address: "",
+    mobile: "",
     dob: "",
-    city: "DAVANGERE",
-    pincode: "576221",
-    pan: "CDUPS7569F",
-    aadhar: "996186607638",
-    bankName: "HDFC BANK",
-    ifsc: "HDFC0004957",
-    branch: "BANGALORE",
-    accountNumber: "50100783125288",
+    city: "",
+    pincode: "",
+    pan: "",
+    aadhar: "",
+    bankName: "",
+    ifsc: "",
+    branch: "",
+    accountNumber: "",
     nomineeName: "",
     nomineeRelation: "",
     nomineeAadhar: "",
   });
 
-  // Handle input change
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    if (userId && token) {
+      axios
+        .get(`http://localhost:5000/api/user/getUser/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          console.log("API Response:", response.data);
+          if (response.data && response.data.data && response.data.data.data) {
+            const userData = response.data.data.data;
 
-  // Handle form submission
+            setFormData({
+              name: userData.name || "",
+              email: userData.email || "",
+              gender: userData.gender || "",
+              state: userData.state || "",
+              address: userData.address || "",
+              mobile: userData.phone_no || "",
+              dob: userData.date_of_birth ? userData.date_of_birth.split("T")[0] : "",
+              city: userData.city || "",
+              pincode: userData.pincode || "",
+              pan: userData.pan_number || "",
+              aadhar: userData.aadhar_number || "",
+              bankName: userData.bank_name || "",
+              ifsc: userData.ifsc || "",
+              branch: userData.branch || "",
+              accountNumber: userData.ac_number || "",
+              nomineeName: userData.nominee_name || "",
+              nomineeRelation: userData.nominee_relationship || "",
+              nomineeAadhar: userData.nominee_aadhar_number || "",
+            });
+          } else {
+            console.warn("API returned empty data.");
+          }
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching user details:", error.response ? error.response.data : error.message);
+          setLoading(false);
+        });
+    } else {
+      console.warn("Missing User ID or Token. Skipping API call.");
+      setLoading(false);
+    }
+  }, [userId, token]);
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Updated Data:", formData);
-    alert("Profile Updated Successfully!");
+  
+    const updatedData = {
+      name: formData.name,
+      email: formData.email,
+      gender: formData.gender,
+      state: formData.state,
+      address: formData.address,
+      phone_no: formData.mobile,
+      date_of_birth: formData.dob,
+      city: formData.city,
+      pincode: formData.pincode,
+      pan_number: formData.pan,
+      aadhar_number: formData.aadhar,
+      bank_name: formData.bankName,
+      ifsc: formData.ifsc,
+      branch: formData.branch,
+      ac_number: formData.accountNumber,
+      nominee_name: formData.nomineeName,
+      nominee_aadhar_number: formData.nomineeAadhar,
+      nominee_relationship: formData.nomineeRelation,
+    };
+  
+    console.log("Submitting Data:", updatedData);
+  
+    axios
+      .put(`http://localhost:5000/api/user/updateUserProfile/${userId}`, updatedData, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        console.log("Update Response:", response.data);
+        
+        Swal.fire({
+          title: "Success!",
+          text: "Profile Updated Successfully!",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      })
+      .catch((error) => {
+        console.error("Error updating profile:", error.response ? error.response.data : error.message);
+        
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to update profile.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      });
   };
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    console.log("Updated Form Data:", formData); // Debugging Log
+  };
+  
+  if (loading) return <Typography variant="h6" align="center">Loading...</Typography>;
 
   return (
     <Container
@@ -50,62 +154,80 @@ const EditProfileForm = () => {
         transition: "margin-left 0.3s ease-in-out",
       }}
     >
-      <form onSubmit={handleSubmit}>
-        <Card sx={{ p: 3 }}>
-          <CardContent>
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-              Personal Information
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Name" name="name" value={formData.name} onChange={handleChange} required /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Email" name="email" type="email" value={formData.email} onChange={handleChange} required /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Gender" name="gender" value={formData.gender} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="State" name="state" value={formData.state} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Address" name="address" value={formData.address} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Mobile No" name="mobile" type="tel" value={formData.mobile} onChange={handleChange} required /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Date of Birth" name="dob" type="date" InputLabelProps={{ shrink: true }} value={formData.dob} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="City" name="city" value={formData.city} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Pincode" name="pincode" value={formData.pincode} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="PAN" name="pan" value={formData.pan} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Aadhar" name="aadhar" value={formData.aadhar} onChange={handleChange} /></Grid>
-            </Grid>
-          </CardContent>
-        </Card>
+    <form onSubmit={handleSubmit}>
+  {/* Personal Information */}
+  <Card sx={{ p: 3 }}>
+    <CardContent>
+      <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>Personal Information</Typography>
+      <Grid container spacing={3}>
+        {[
+          "name", "email", "gender", "state", "address", "mobile", "dob",
+          "city", "pincode", "pan", "aadhar"
+        ].map((field, index) => (
+          <Grid item xs={12} sm={6} key={index}>
+            <TextField
+              fullWidth
+              label={field.charAt(0).toUpperCase() + field.slice(1)}
+              name={field}
+              type={field === "dob" ? "date" : "text"}
+              value={formData[field] || ""}
+              onChange={handleChange}
+              InputLabelProps={field === "dob" ? { shrink: true } : {}}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </CardContent>
+  </Card>
 
-        <Card sx={{ p: 3, mt: 3 }}>
-          <CardContent>
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-              Bank Information
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Bank Name" name="bankName" value={formData.bankName} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="IFSC" name="ifsc" value={formData.ifsc} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Branch" name="branch" value={formData.branch} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="A/c Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} /></Grid>
-            </Grid>
-          </CardContent>
-        </Card>
+  {/* Bank Information */}
+  <Card sx={{ p: 3, mt: 3 }}>
+    <CardContent>
+      <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>Bank Information</Typography>
+      <Grid container spacing={3}>
+        {["bankName", "ifsc", "branch", "accountNumber"].map((field, index) => (
+          <Grid item xs={12} sm={6} key={index}>
+            <TextField
+              fullWidth
+              label={field.replace(/([A-Z])/g, " $1").trim()}
+              name={field}
+              value={formData[field] || ""}
+              onChange={handleChange}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </CardContent>
+  </Card>
 
-        <Card sx={{ p: 3, mt: 3 }}>
-          <CardContent>
-            <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-              Nominee Details
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Nominee Name" name="nomineeName" value={formData.nomineeName} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Nominee Relation" name="nomineeRelation" value={formData.nomineeRelation} onChange={handleChange} /></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth label="Nominee Aadhar" name="nomineeAadhar" value={formData.nomineeAadhar} onChange={handleChange} /></Grid>
-            </Grid>
-          </CardContent>
-        </Card>
+  {/* Nominee Details */}
+  <Card sx={{ p: 3, mt: 3 }}>
+    <CardContent>
+      <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>Nominee Details</Typography>
+      <Grid container spacing={3}>
+        {["nomineeName", "nomineeRelation", "nomineeAadhar"].map((field, index) => (
+          <Grid item xs={12} sm={6} key={index}>
+            <TextField
+              fullWidth
+              label={field.replace(/([A-Z])/g, " $1").trim()}
+              name={field}
+              value={formData[field] || ""}
+              onChange={handleChange}
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </CardContent>
+  </Card>
 
-        <Grid container justifyContent="center" sx={{ mt: 3 }}>
-          <Button type="submit" variant="contained" color="primary">
-            Save Changes
-          </Button>
-        </Grid>
-      </form>
-    </Container>
+  {/* Submit Button */}
+  <Grid container justifyContent="center" sx={{ mt: 3 }}>
+    <Button type="submit" variant="contained" color="primary">
+      Save Changes
+    </Button>
+  </Grid>
+</form>
+ </Container>
   );
 };
 

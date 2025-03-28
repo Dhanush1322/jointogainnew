@@ -1,4 +1,8 @@
 /* Header Styles */
+
+.swal2-container {
+  z-index: 99999 !important; /* Ensure it appears above all modals */
+}
 .header {
   display: flex;
   justify-content: space-between;
