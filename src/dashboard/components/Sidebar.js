@@ -44,6 +44,8 @@ const Sidebar = ({ handleLogout, isOpen }) => {
         <hr className="sidebar-divider" />
         <li className="sidebar-item"><Link to="/Kyc"><User size={20} /> KYC</Link></li>
         <hr className="sidebar-divider" />
+        <li className="sidebar-item"><Link to="/MyKyc"><User size={20} />My KYC </Link></li>
+        <hr className="sidebar-divider" />
         <li className="sidebar-item" onClick={() => toggleMenu('team')}>
           <div className="sidebar-link">
             <Home size={20} /> <span>My Team</span>

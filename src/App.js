@@ -7,6 +7,7 @@ import DashboardPage from "./dashboard/pages/DashboardPage";
 
 import EditProfile from "./dashboard/pages/EditProfile";
 import Kyc from "./dashboard/pages/Kyc";
+import MyKyc from "./dashboard/pages/MyKyc";
 import ChangePassword from "./dashboard/pages/ChangePassword";
 import AddNewMember from "./dashboard/pages/AddNewMember";
 import ViewMatrix from "./dashboard/pages/ViewMatrix";
@@ -28,6 +29,7 @@ const App = () => {
           <Route path="/EditProfile" element={<EditProfile />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/Kyc" element={<Kyc />} />
+          <Route path="/MyKyc" element={<MyKyc />} />
           <Route path="/AddNewMember" element={<AddNewMember />} />
           <Route path="/ViewMatrix" element={<ViewMatrix />} />
           <Route path="/Dowline" element={<Dowline />} />

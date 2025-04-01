@@ -6,46 +6,55 @@ function KycForm() {
   const [panFile, setPanFile] = useState(null);
   const [bankPassFile, setBankPassFile] = useState(null);
   const [aadhaarFile, setAadhaarFile] = useState(null);
-
-  const userId = localStorage.getItem("userId");
+  
+  const userId = localStorage.getItem("_id");
+  const token = localStorage.getItem("accessToken");
 
   const handleFileChange = (e, setFile) => {
     setFile(e.target.files[0]);
   };
 
-  const uploadFile = async (file, endpoint) => {
+  const uploadFile = async (file, url) => {
     if (!file) return;
     const formData = new FormData();
     formData.append("file", file);
+
     try {
-      const response = await fetch(`http://localhost:5000/api/user/${endpoint}/${userId}`, {
-        method: "POST",
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
-      const result = await response.json();
-      console.log(`${endpoint} upload result:`, result);
+
+      if (!response.ok) {
+        throw new Error("File upload failed");
+      }
     } catch (error) {
-      console.error(`Error uploading ${endpoint}:`, error);
+      console.error("Error uploading file:", error);
+      Swal.fire({ title: "Error", text: error.message, icon: "error" });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await uploadFile(panFile, "addPanCardFile");
-    await uploadFile(aadhaarFile, "addAadharCardFile");
-    await uploadFile(bankPassFile, "addBankPassbookFile");
+    if (!userId || !token) {
+      Swal.fire({ title: "Error", text: "User not authenticated", icon: "error" });
+      return;
+    }
 
-    // Reset form
+    await Promise.all([
+      uploadFile(panFile, `http://localhost:5000/api/user/addPanCardFile/${userId}`),
+      uploadFile(aadhaarFile, `http://localhost:5000/api/user/addAadharCardFile/${userId}`),
+      uploadFile(bankPassFile, `http://localhost:5000/api/user/addBankPassbookFile/${userId}`),
+    ]);
+
     setPanFile(null);
     setBankPassFile(null);
     setAadhaarFile(null);
 
-    Swal.fire({
-      title: "Success!",
-      text: "Files uploaded successfully!",
-      icon: "success",
-      confirmButtonText: "OK"
-    });
+    Swal.fire({ title: "Success!", text: "Files uploaded successfully!", icon: "success" });
   };
 
   return (

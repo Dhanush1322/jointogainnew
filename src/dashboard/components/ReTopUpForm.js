@@ -10,15 +10,19 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 function ReTopUpForm() {
   const [formData, setFormData] = useState({
-    investmentPlan: "",
     selectPlan: "",
     amount: "",
     utrNo: "",
     proof: null,
+    investDuration: "",  // Added for storing duration in months
   });
+
+  const token = localStorage.getItem("accessToken");
+  const userId = localStorage.getItem("_id");
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -29,10 +33,81 @@ function ReTopUpForm() {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Process form data (e.g., send to API)
-    console.log("Form submitted:", formData);
+  const handleSubmit = async (e) => {
+    e.preventDefault();  // Prevent page reload
+
+    const { selectPlan, amount, utrNo, proof, investDuration } = formData;
+
+    // Validate that investDuration is a valid number when Long Term is selected
+    if (selectPlan === "long term" && (!investDuration || isNaN(investDuration) || investDuration <= 0)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Duration',
+        text: 'Please enter a valid investment duration in months.',
+      });
+      return;
+    }
+
+    // Create FormData to send as multipart form data
+    const formDataToSend = new FormData();
+    formDataToSend.append("invest_type", selectPlan);  // Append plan type
+    formDataToSend.append("utr_no", utrNo);            // Append UTR number
+    formDataToSend.append("invest_amount", amount);    // Append investment amount
+    formDataToSend.append("file", proof);              // Append the file (proof)
+
+    // If Long Term is selected, add invest_duration_in_month
+    if (selectPlan === "long term") {
+      formDataToSend.append("invest_duration_in_month", investDuration);
+    }
+
+    try {
+      // Send the form data to the API
+      const response = await fetch(`http://localhost:5000/api/user/addTopUp/${userId}`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,  // Include token in Authorization header
+        },
+        body: formDataToSend,  // FormData as body content
+      });
+
+      // Debugging: Log the status and the response body
+      console.log("Response Status:", response.status);  // Log status code
+      const responseBody = await response.json();  // Parse the response body
+      console.log("Response Body:", responseBody);   // Log the response content
+
+      if (response.ok) {
+        // If the request is successful, show success alert using SweetAlert2
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Form submitted successfully!',
+        }).then(() => {
+          // Reset form fields after successful submission
+          setFormData({
+            selectPlan: "",
+            amount: "",
+            utrNo: "",
+            proof: null,
+            investDuration: "",
+          });
+        });
+      } else {
+        // If the response is not OK, show error alert using SweetAlert2
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: responseBody.message || 'An error occurred, please try again.',
+        });
+        console.error("Error details:", responseBody);
+      }
+    } catch (error) {
+      console.error("Request failed:", error);  // Handle network or request failure
+      Swal.fire({
+        icon: 'error',
+        title: 'Network Error',
+        text: 'There was a network error. Please check your internet connection and try again.',
+      });
+    }
   };
 
   return (
@@ -51,15 +126,6 @@ function ReTopUpForm() {
         </Typography>
         <form onSubmit={handleSubmit}>
           <Box sx={{ mb: 2 }}>
-            <TextField
-              fullWidth
-              label="Investment Plan"
-              name="investmentPlan"
-              value={formData.investmentPlan}
-              onChange={handleChange}
-            />
-          </Box>
-          <Box sx={{ mb: 2 }}>
             <FormControl fullWidth>
               <InputLabel id="select-plan-label">Select Plan</InputLabel>
               <Select
@@ -73,7 +139,7 @@ function ReTopUpForm() {
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value="longTerm">Long Term</MenuItem>
+                <MenuItem value="long term">Long Term</MenuItem>
                 <MenuItem value="monthly">Monthly</MenuItem>
               </Select>
             </FormControl>
@@ -108,6 +174,21 @@ function ReTopUpForm() {
               </Typography>
             )}
           </Box>
+
+          {/* Conditionally render the 'Invest Duration' field if Long Term is selected */}
+          {formData.selectPlan === "long term" && (
+            <Box sx={{ mb: 2 }}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Investment Duration (Months)"
+                name="investDuration"
+                value={formData.investDuration}
+                onChange={handleChange}
+              />
+            </Box>
+          )}
+
           <Button
             variant="contained"
             color="primary"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -13,17 +13,49 @@ import {
 } from '@mui/material';
 
 function DownlineTable() {
-  const data = [
-    { sNo: 1, username: 'user1', level: 1, name: 'John Doe', investment: 10000, joinDate: '2022-01-01', activationDate: '2022-01-02' },
-    { sNo: 2, username: 'user2', level: 2, name: 'Jane Smith', investment: 20000, joinDate: '2022-02-01', activationDate: '2022-02-02' },
-    { sNo: 3, username: 'user3', level: 1, name: 'Alice Johnson', investment: 15000, joinDate: '2022-03-01', activationDate: '2022-03-02' },
-    { sNo: 4, username: 'user4', level: 3, name: 'Bob Brown', investment: 25000, joinDate: '2022-04-01', activationDate: '2022-04-02' },
-    { sNo: 5, username: 'user5', level: 2, name: 'Charlie Davis', investment: 30000, joinDate: '2022-05-01', activationDate: '2022-05-02' },
-    // You can add more rows here
-  ];
-
+  const [data, setData] = useState([]); // Holds the referral data
+  const [selectedUser, setSelectedUser] = useState(null); // Stores the clicked user
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const token = localStorage.getItem("accessToken");
+  const userId = selectedUser ? selectedUser._id : localStorage.getItem("_id"); // Fetch referrals dynamically
+
+  // Fetch referral data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/user/getUser/${userId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        const result = await response.json();
+        console.log(result); // Log the response to check the structure of the data
+
+        // Check if the result and the referrals field exist
+        if (result?.data?.data?.referrals) {
+          setData(result.data.data?.referrals);
+        } else {
+          console.error('Referrals not found in the response data');
+          setData([]);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setData([]);
+      }
+    };
+
+    fetchData();
+  }, [userId, token]); // Fetch data whenever the selected user changes
+
+  // Handle row click to show details of the clicked user's referrals
+  const handleRowClick = (user) => {
+    setSelectedUser(user);
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -36,9 +68,9 @@ function DownlineTable() {
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <Box mb={2}>
+      <Box mb={2}>
         <Typography variant="h6" component="div">
-          Downline Members
+          {selectedUser ? `Referrals of ${selectedUser.name}` : 'Downline Members'}
         </Typography>
       </Box>
       <TableContainer>
@@ -55,18 +87,31 @@ function DownlineTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
-                <TableRow key={row.sNo}>
-                  <TableCell>{row.sNo}</TableCell>
-                  <TableCell>{row.username}</TableCell>
-                  <TableCell>{row.level}</TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.investment.toLocaleString()}</TableCell>
-                  <TableCell>{row.joinDate}</TableCell>
-                  <TableCell>{row.activationDate}</TableCell>
-                </TableRow>
-              ))}
+            {data.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} align="center">No data available</TableCell>
+              </TableRow>
+            ) : (
+              data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => (
+                  <React.Fragment key={row._id}>
+                    {/* Main Row */}
+                    <TableRow
+                      hover
+                      onClick={() => handleRowClick(row)} // Click event to load referrals
+                      style={{ cursor: "pointer", background: selectedUser?._id === row._id ? "#f0f8ff" : "inherit" }}
+                    >
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{row.user_profile_id}</TableCell>
+                      <TableCell>{row.user_level || 'N/A'}</TableCell>
+                      <TableCell>{row.name}</TableCell>
+                      <TableCell>{row.investment_info.length > 0 ? row.investment_info[0].invest_amount.toLocaleString() : 'N/A'}</TableCell>
+                      <TableCell>{new Date(row.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>{row.user_status === 'Inactive' ? 'Inactive' : 'Active'}</TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>

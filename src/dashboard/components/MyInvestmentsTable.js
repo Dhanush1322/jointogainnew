@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -13,32 +13,51 @@ import {
 } from '@mui/material';
 
 function MyInvestmentsTable() {
-  const data = [
-    {
-      sNo: 1,
-      requestDate: '16/Jan/2025',
-      approvedDate: '16/Jan/2025',
-      investment: 50000,
-      status: 'Active',
-      roiLeft: 18,
-      roiSchedule: 'View',
-      agreement: 'View',
-    },
-    {
-      sNo: 2,
-      requestDate: '27/Feb/2025',
-      approvedDate: '27/Feb/2025',
-      investment: 950000,
-      status: 'Active',
-      roiLeft: 20,
-      roiSchedule: 'View',
-      agreement: 'View',
-    },
-  ];
-
+  const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+const userid = localStorage.getItem("_id");
+  // Fetching the data from the API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/user/getTopUp/${userid}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+  
+        const result = await response.json();
+  
+        // Check if investment_info exists
+        if (result.investment_info && result.investment_info.length > 0) {
+          // Map your data in the format needed for the table
+          const formattedData = result.investment_info.map((item, index) => ({
+            sNo: index + 1,
+            requestDate: new Date(item.invest_apply_date).toLocaleDateString(),
+            approvedDate: item.invest_confirm_date ? new Date(item.invest_confirm_date).toLocaleDateString() : 'Pending',
+            investment: item.invest_amount,
+            status: item.invest_confirm_date ? 'Active' : 'Pending',
+            roiLeft: item.invest_duration_in_month, // If you need to show remaining months
+          }));
+  
+          setData(formattedData);
+        } else {
+          console.log('No investment data available');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -65,8 +84,6 @@ function MyInvestmentsTable() {
               <TableCell>Investment (Rs)</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>ROI Left</TableCell>
-              <TableCell>ROI Schedule</TableCell>
-              <TableCell>Agreement</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -78,8 +95,6 @@ function MyInvestmentsTable() {
                 <TableCell>{row.investment.toLocaleString()}</TableCell>
                 <TableCell>{row.status}</TableCell>
                 <TableCell>{row.roiLeft}</TableCell>
-                <TableCell>{row.roiSchedule}</TableCell>
-                <TableCell>{row.agreement}</TableCell>
               </TableRow>
             ))}
           </TableBody>
