@@ -73,7 +73,10 @@ function Header() {
   return (
     <div className="header">
       {/* Logo Section */}
-      <div className="logo">Logo</div>
+      <div className="logo">
+  <img src="/img/logoo.png" alt="Logo" style={{ height: "100px" }} />
+</div>
+
 
       {/* Navigation Links for Desktop */}
       <div className="nav-links">
@@ -89,15 +92,18 @@ function Header() {
 
       {/* Hamburger Icon */}
       <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>☰</div>
+{/* Mobile Menu with Login Link */}
+<div className={`mobile-menu ${menuOpen ? "active" : ""}`}>
+  {['home', 'about', 'plan', 'level', 'contact', 'download'].map((section) => (
+    <a key={section} href={`#${section}`} onClick={(e) => handleScroll(e, section)}>
+      {section.charAt(0).toUpperCase() + section.slice(1)}
+    </a>
+  ))}
+  <a onClick={() => { setLoginOpen(true); setMenuOpen(false); }} style={{ cursor: 'pointer' }}>
+    Login
+  </a>
+</div>
 
-      {/* Mobile Menu */}
-      <div className={`mobile-menu ${menuOpen ? "active" : ""}`}>
-        {['home', 'about', 'plan', 'level', 'contact', 'download'].map((section) => (
-          <a key={section} href={`#${section}`} onClick={(e) => handleScroll(e, section)}>
-            {section.charAt(0).toUpperCase() + section.slice(1)}
-          </a>
-        ))}
-      </div>
 
       {/* Login Popup */}
       <Dialog open={loginOpen} onClose={() => setLoginOpen(false)}>

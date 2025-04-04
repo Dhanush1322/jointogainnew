@@ -9,7 +9,7 @@ function Footer() {
         {/* Left Section */}
         <div style={leftSectionStyle} className="footer-left">
           <div style={logoContainerStyle}>
-            <img src="/logo.png" alt="Logo" style={logoStyle} />
+          <img src="/img/logoo.png" alt="Logo" style={{ height: "100px" }} />
             <h2>Join To Gain</h2>
           </div>
           <p style={copyrightStyle}>
