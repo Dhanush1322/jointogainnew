@@ -22,7 +22,7 @@ const DashboardMain = () => {
         const token = localStorage.getItem("accessToken"); // Replace with the actual token
         const userId =  localStorage.getItem("_id"); // Replace with the actual token
         const response = await axios.get(
-          `http://localhost:5000/api/user/getUser/${userId}`,
+          `http://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`, // Pass token in headers

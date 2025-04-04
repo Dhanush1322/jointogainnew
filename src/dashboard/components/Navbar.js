@@ -14,7 +14,7 @@ const Navbar = ({ toggleSidebar }) => {
         <FaSearch className="search-icon" />
       </div>
 
-      <h3>Admin Dashboard</h3>
+      <h3>User Dashboard</h3>
 
       <div className="navbar-profile">
         <FaUserCircle className="profile-icon" />

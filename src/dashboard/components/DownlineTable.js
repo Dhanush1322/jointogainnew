@@ -10,22 +10,24 @@ import {
   TablePagination,
   Typography,
   Box,
+  Button,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // Import
 
 function DownlineTable() {
-  const [data, setData] = useState([]); // Holds the referral data
-  const [selectedUser, setSelectedUser] = useState(null); // Stores the clicked user
+  const [data, setData] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const navigate = useNavigate(); // Initialize
 
   const token = localStorage.getItem("accessToken");
-  const userId = selectedUser ? selectedUser._id : localStorage.getItem("_id"); // Fetch referrals dynamically
+  const userId = selectedUser ? selectedUser._id : localStorage.getItem("_id");
 
-  // Fetch referral data from API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/user/getUser/${userId}`, {
+        const response = await fetch(`http://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -34,13 +36,9 @@ function DownlineTable() {
         });
 
         const result = await response.json();
-        console.log(result); // Log the response to check the structure of the data
-
-        // Check if the result and the referrals field exist
         if (result?.data?.data?.referrals) {
-          setData(result.data.data?.referrals);
+          setData(result.data.data.referrals);
         } else {
-          console.error('Referrals not found in the response data');
           setData([]);
         }
       } catch (error) {
@@ -50,11 +48,13 @@ function DownlineTable() {
     };
 
     fetchData();
-  }, [userId, token]); // Fetch data whenever the selected user changes
+  }, [userId, token]);
 
-  // Handle row click to show details of the clicked user's referrals
-  const handleRowClick = (user) => {
-    setSelectedUser(user);
+  const handleViewClick = (userId) => {
+    // Navigate to another page with the userId in the route or as a query param
+    navigate(`/ViewInvestments/${userId}`);
+    // or use query param
+    // navigate(`/user-details?userId=${userId}`);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -69,10 +69,11 @@ function DownlineTable() {
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <Box mb={2}>
-        <Typography variant="h6" component="div">
+        <Typography variant="h6">
           {selectedUser ? `Referrals of ${selectedUser.name}` : 'Downline Members'}
         </Typography>
       </Box>
+
       <TableContainer>
         <Table>
           <TableHead>
@@ -82,39 +83,62 @@ function DownlineTable() {
               <TableCell>Level</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Investment (Rs)</TableCell>
+              <TableCell>View Investment</TableCell>
               <TableCell>Join Date</TableCell>
-              <TableCell>Activation Date</TableCell>
+              <TableCell>Activation Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} align="center">No data available</TableCell>
+                <TableCell colSpan={8} align="center">No data available</TableCell>
               </TableRow>
             ) : (
-              data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              data
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => (
-                  <React.Fragment key={row._id}>
-                    {/* Main Row */}
-                    <TableRow
-                      hover
-                      onClick={() => handleRowClick(row)} // Click event to load referrals
-                      style={{ cursor: "pointer", background: selectedUser?._id === row._id ? "#f0f8ff" : "inherit" }}
-                    >
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{row.user_profile_id}</TableCell>
-                      <TableCell>{row.user_level || 'N/A'}</TableCell>
-                      <TableCell>{row.name}</TableCell>
-                      <TableCell>{row.investment_info.length > 0 ? row.investment_info[0].invest_amount.toLocaleString() : 'N/A'}</TableCell>
-                      <TableCell>{new Date(row.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell>{row.user_status === 'Inactive' ? 'Inactive' : 'Active'}</TableCell>
-                    </TableRow>
-                  </React.Fragment>
+                  <TableRow
+                    key={row._id}
+                    hover
+                    onClick={() => setSelectedUser(row)}
+                    style={{
+                      cursor: "pointer",
+                      backgroundColor: selectedUser?._id === row._id ? "#f0f8ff" : "inherit",
+                    }}
+                  >
+                    <TableCell>{index + 1 + page * rowsPerPage}</TableCell>
+                    <TableCell>{row.user_profile_id}</TableCell>
+                    <TableCell>{row.user_level || 'N/A'}</TableCell>
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell>
+  {row.investment_info?.length > 0
+    ? row.investment_info
+        .reduce((sum, inv) => sum + (inv.invest_amount || 0), 0)
+        .toLocaleString('en-IN')
+    : 'N/A'}
+</TableCell>
+
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevent row click
+                          handleViewClick(row._id); // pass ID
+                        }}
+                      >
+                        View
+                      </Button>
+                    </TableCell>
+                    <TableCell>{new Date(row.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>{row.user_status === 'Inactive' ? 'Inactive' : 'Active'}</TableCell>
+                  </TableRow>
                 ))
             )}
           </TableBody>
         </Table>
       </TableContainer>
+
       <TablePagination
         component="div"
         count={data.length}

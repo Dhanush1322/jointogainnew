@@ -21,7 +21,7 @@ const userid = localStorage.getItem("_id");
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/user/getTopUp/${userid}`, {
+        const response = await fetch(`http://jointogain.ap-1.evennode.com/api/user/getTopUp/${userid}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ const userid = localStorage.getItem("_id");
               <TableCell>Approved Date</TableCell>
               <TableCell>Investment (Rs)</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>ROI Left</TableCell>
+              <TableCell>Invest Duration (month)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

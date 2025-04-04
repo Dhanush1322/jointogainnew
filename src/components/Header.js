@@ -28,7 +28,7 @@ function Header() {
     };
   
     try {
-      const response = await fetch('http://localhost:5000/api/user/loginUser', {
+      const response = await fetch('http://jointogain.ap-1.evennode.com/api/user/loginUser', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData)

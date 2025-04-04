@@ -62,7 +62,7 @@ function ReTopUpForm() {
 
     try {
       // Send the form data to the API
-      const response = await fetch(`http://localhost:5000/api/user/addTopUp/${userId}`, {
+      const response = await fetch(`http://jointogain.ap-1.evennode.com/api/user/addTopUp/${userId}`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,  // Include token in Authorization header
