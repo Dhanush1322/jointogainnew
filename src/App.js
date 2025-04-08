@@ -17,6 +17,8 @@ import WithdrawDetails from "./dashboard/pages/WithdrawDetails";
 import ReTopUp from "./dashboard/pages/ReTopUp";
 import MyInvestments from "./dashboard/pages/MyInvestments";
 import ViewInvestments from "./dashboard/pages/ViewInvestments";
+import MyLevel from "./dashboard/pages/MyLevel";
+import MyLevelPaid from "./dashboard/pages/MyLevelPaid";
 const App = () => {
   return (
     <div className="app-container">
@@ -36,6 +38,8 @@ const App = () => {
           <Route path="/Dowline" element={<Dowline />} />
           <Route path="/AccountTransaction" element={<AccountTransaction />} />
           <Route path="/WithdrawDetails" element={<WithdrawDetails />} />
+          <Route path="/MyLevel" element={<MyLevel />} />
+          <Route path="/MyLevelPaid" element={<MyLevelPaid />} />
           <Route path="/ReTopUp" element={<ReTopUp />} />
           <Route path="/MyInvestments" element={<MyInvestments />} />
           <Route path="/ViewInvestments/:id" element={<ViewInvestments />} />

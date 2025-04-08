@@ -1,113 +1,126 @@
 import React, { useEffect, useState } from "react";
 import {
+  Paper,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Typography,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper
 } from "@mui/material";
-import axios from "axios";
 
 function MyKycList() {
-  const [kycData, setKycData] = useState(null);
-  const userId = localStorage.getItem("_id");
-  const token = localStorage.getItem("accessToken");
+  const [users, setUsers] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogContent, setDialogContent] = useState(null);
+const userid = localStorage.getItem("_id");
+useEffect(() => {
+  fetch(`http://localhost:5000/api/user/getUser/${userid}`)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.Status && data.data?.Status) {
+        console.log("Fetched User:", data.data.data); // <-- Add this
+        setUsers([data.data.data]); 
+      }
+    })
+    .catch((err) => {
+      console.error("Error fetching users:", err);
+    });
+}, []);
 
-  useEffect(() => {
-    if (!userId || !token) {
-      console.error("User ID or Token missing");
-      return;
-    }
 
-    axios
-      .get(`http://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      })
-      .then((response) => {
-        if (response.data.Status) {
-          console.log("KYC Data:", response.data.data.data);
-          setKycData(response.data.data.data);
-        }
-      })
-      .catch((error) => console.error("Error fetching KYC data:", error));
-  }, [userId, token]);
-
-  if (!kycData) return <p>Loading...</p>;
-
-  const getFileType = (filename) => {
-    return filename?.split('.').pop().toLowerCase();
+  const handleView = (fileUrl) => {
+    if (!fileUrl || fileUrl.trim() === "") return;
+    setDialogContent(fileUrl);
+    setOpenDialog(true);
   };
 
-  const renderFile = (fileName, type) => {
-    if (!fileName || fileName.trim() === "") return "Not Uploaded";
-
-    const fileUrl = `http://jointogain.ap-1.evennode.com/api/user/download${type}File/${fileName}`;
-    const fileType = getFileType(fileName);
-
-    const isImage = fileType === "jpg" || fileType === "jpeg" || fileType === "png";
-
-    if (isImage) {
-      return (
-        <img
-          src={fileUrl}
-          alt={type}
-          width="100"
-          height="100"
-          style={{
-            objectFit: "cover",
-            borderRadius: "8px",
-            border: "1px solid #ccc"
-          }}
-          onError={(e) => {
-            console.error(`Error loading ${type} image:`, e);
-            e.target.alt = "Image Not Found";
-            e.target.style.border = "1px solid red";
-          }}
-        />
-      );
-    } else {
-      return (
-        <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-          View Document
-        </a>
-      );
-    }
+  const getFileUrl = (type, fileName) => {
+    const baseUrls = {
+      aadhar: "http://localhost:5000/api/user/downloadAadharFile/",
+      pan: "http://localhost:5000/api/user/downloadPanFile/",
+      bank: "http://localhost:5000/api/user/downloadBankPassbookFile/",
+    };
+    return `${baseUrls[type]}${fileName}`;
   };
 
+  
   return (
-    <Paper sx={{ padding: 2, margin: 2 }}>
-      <h3>My KYC List</h3>
+    <div style={{ padding: "16px" }}>
+     
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell><strong>Username</strong></TableCell>
               <TableCell><strong>Name</strong></TableCell>
-              <TableCell><strong>PAN</strong></TableCell>
-              <TableCell><strong>Aadhar</strong></TableCell>
-              <TableCell><strong>Bank Passbook</strong></TableCell>
+              <TableCell><strong>Email</strong></TableCell>
               <TableCell><strong>Status</strong></TableCell>
+              <TableCell><strong>KYC Documents</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell>{kycData.user_profile_id}</TableCell>
-              <TableCell>{kycData.name}</TableCell>
-              <TableCell>{renderFile(kycData.uploaded_pan_file, "Pan")}</TableCell>
-              <TableCell>{renderFile(kycData.uploaded_aadher_file, "Aadhar")}</TableCell>
-              <TableCell>{renderFile(kycData.uploaded_bank_passbook_file, "BankPassbook")}</TableCell>
-              <TableCell>{kycData.kyc_status?.trim() || "Pending"}</TableCell>
-            </TableRow>
+            {users
+              .filter((user) => user.kyc_status?.trim() === " " || user.kyc_status?.trim() === "Approved" || user.kyc_status?.trim() === "Rejected")
+              .map((user) => (
+                <TableRow key={user._id}>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.kyc_status || "Pending"}</TableCell>
+                  <TableCell>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      {user.uploaded_aadher_file?.trim() !== "" && (
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleView(getFileUrl("aadhar", user.uploaded_aadher_file))}
+                        >
+                          View Aadhar
+                        </Button>
+                      )}
+                      {user.uploaded_pan_file?.trim() !== "" && (
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleView(getFileUrl("pan", user.uploaded_pan_file))}
+                        >
+                          View PAN
+                        </Button>
+                      )}
+                      {user.uploaded_bank_passbook_file?.trim() !== "" && (
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleView(getFileUrl("bank", user.uploaded_bank_passbook_file))}
+                        >
+                          View Passbook
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
-    </Paper>
+
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
+        <DialogTitle>View Document</DialogTitle>
+        <DialogContent>
+          {dialogContent && (
+            <img
+              src={dialogContent}
+              alt="Document"
+              style={{ width: "100%", marginTop: 10, borderRadius: 8 }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
 
 export default MyKycList;
+

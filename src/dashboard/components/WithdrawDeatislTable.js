@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Pagination, Dialog, DialogContent,
 } from "@mui/material";
+import { red } from "@mui/material/colors";
 
 const WithdrawDeatislTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,7 +23,7 @@ const WithdrawDeatislTable = () => {
         return;
       }
 
-      const response = await axios.get(`http://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`, {
+      const response = await axios.get(`http://localhost:5000/api/user/getUser/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }, // Pass token in headers
       });
 
@@ -92,8 +93,7 @@ const WithdrawDeatislTable = () => {
               <TableCell>TDS</TableCell>
               <TableCell>S.C</TableCell>
               <TableCell>NetPay (Rs)</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Payout Date</TableCell>
+           
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
@@ -111,9 +111,8 @@ const WithdrawDeatislTable = () => {
                 <TableCell>{record.tds}</TableCell>
                 <TableCell>{record.sc}</TableCell>
                 <TableCell>{record.netPay}</TableCell>
-                <TableCell>{record.date}</TableCell>
-                <TableCell>{record.payoutDate}</TableCell>
-                <TableCell>Pending</TableCell>
+            
+                <TableCell sx={{color:'Green'}}>Paid</TableCell>
               </TableRow>
             ))}
           </TableBody>

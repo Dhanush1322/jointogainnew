@@ -34,55 +34,87 @@ function ReTopUpForm() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();  // Prevent page reload
-
+    e.preventDefault();
+  
     const { selectPlan, amount, utrNo, proof, investDuration } = formData;
-
-    // Validate that investDuration is a valid number when Long Term is selected
-    if (selectPlan === "long term" && (!investDuration || isNaN(investDuration) || investDuration <= 0)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Invalid Duration',
-        text: 'Please enter a valid investment duration in months.',
-      });
-      return;
-    }
-
-    // Create FormData to send as multipart form data
-    const formDataToSend = new FormData();
-    formDataToSend.append("invest_type", selectPlan);  // Append plan type
-    formDataToSend.append("utr_no", utrNo);            // Append UTR number
-    formDataToSend.append("invest_amount", amount);    // Append investment amount
-    formDataToSend.append("file", proof);              // Append the file (proof)
-
-    // If Long Term is selected, add invest_duration_in_month
-    if (selectPlan === "long term") {
-      formDataToSend.append("invest_duration_in_month", investDuration);
-    }
-
+  
     try {
-      // Send the form data to the API
-      const response = await fetch(`http://jointogain.ap-1.evennode.com/api/user/addTopUp/${userId}`, {
+      // Fetch user details
+      const kycResponse = await fetch(`http://localhost:5000/api/user/getUser/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const userData = await kycResponse.json();
+      const {
+        uploaded_pan_file,
+        uploaded_aadher_file,
+        uploaded_bank_passbook_file,
+        kyc_status,
+      } = userData;
+  
+      // Validate KYC Files
+      if (!uploaded_pan_file || !uploaded_aadher_file || !uploaded_bank_passbook_file) {
+        Swal.fire({
+          icon: "warning",
+          title: "KYC Incomplete",
+          text: "Please complete your KYC by uploading PAN, Aadhaar, and Bank Passbook.",
+        });
+        return;
+      }
+  
+      // Validate KYC Status
+      if (kyc_status !== "Approved") {
+        Swal.fire({
+          icon: "warning",
+          title: "KYC Not Approved",
+          text: "Your KYC is not approved yet. Please wait for approval before proceeding.",
+        });
+        return;
+      }
+  
+      // Validate Long Term Duration
+      if (
+        selectPlan === "long term" &&
+        (!investDuration || isNaN(investDuration) || investDuration <= 0)
+      ) {
+        Swal.fire({
+          icon: "error",
+          title: "Invalid Duration",
+          text: "Please enter a valid investment duration in months.",
+        });
+        return;
+      }
+  
+      // Prepare FormData
+      const formDataToSend = new FormData();
+      formDataToSend.append("invest_type", selectPlan);
+      formDataToSend.append("utr_no", utrNo);
+      formDataToSend.append("invest_amount", amount);
+      formDataToSend.append("file", proof);
+  
+      if (selectPlan === "long term") {
+        formDataToSend.append("invest_duration_in_month", investDuration);
+      }
+  
+      // Submit form
+      const response = await fetch(`http://localhost:5000/api/user/addTopUp/${userId}`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,  // Include token in Authorization header
+          Authorization: `Bearer ${token}`,
         },
-        body: formDataToSend,  // FormData as body content
+        body: formDataToSend,
       });
-
-      // Debugging: Log the status and the response body
-      console.log("Response Status:", response.status);  // Log status code
-      const responseBody = await response.json();  // Parse the response body
-      console.log("Response Body:", responseBody);   // Log the response content
-
+  
+      const responseBody = await response.json();
+  
       if (response.ok) {
-        // If the request is successful, show success alert using SweetAlert2
         Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: 'Form submitted successfully!',
+          icon: "success",
+          title: "Success",
+          text: "Form submitted successfully!",
         }).then(() => {
-          // Reset form fields after successful submission
           setFormData({
             selectPlan: "",
             amount: "",
@@ -92,24 +124,23 @@ function ReTopUpForm() {
           });
         });
       } else {
-        // If the response is not OK, show error alert using SweetAlert2
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: responseBody.message || 'An error occurred, please try again.',
+          icon: "error",
+          title: "Error",
+          text: responseBody.message || "An error occurred, please try again.",
         });
         console.error("Error details:", responseBody);
       }
     } catch (error) {
-      console.error("Request failed:", error);  // Handle network or request failure
+      console.error("Request failed:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Network Error',
-        text: 'There was a network error. Please check your internet connection and try again.',
+        icon: "error",
+        title: "Network Error",
+        text: "There was a network error. Please check your internet connection and try again.",
       });
     }
   };
-
+  
   return (
     <Container maxWidth="sm">
       <Box

@@ -6,7 +6,7 @@ function KycForm() {
   const [panFile, setPanFile] = useState(null);
   const [bankPassFile, setBankPassFile] = useState(null);
   const [aadhaarFile, setAadhaarFile] = useState(null);
-  
+
   const userId = localStorage.getItem("_id");
   const token = localStorage.getItem("accessToken");
 
@@ -39,15 +39,25 @@ function KycForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!userId || !token) {
       Swal.fire({ title: "Error", text: "User not authenticated", icon: "error" });
       return;
     }
 
+    if (!panFile || !bankPassFile || !aadhaarFile) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Files",
+        text: "Please upload all required documents (PAN, Bank Passbook, Aadhaar) before submitting.",
+      });
+      return;
+    }
+
     await Promise.all([
-      uploadFile(panFile, `http://jointogain.ap-1.evennode.com/api/user/addPanCardFile/${userId}`),
-      uploadFile(aadhaarFile, `http://jointogain.ap-1.evennode.com/api/user/addAadharCardFile/${userId}`),
-      uploadFile(bankPassFile, `http://jointogain.ap-1.evennode.com/api/user/addBankPassbookFile/${userId}`),
+      uploadFile(panFile, `http://localhost:5000/api/user/addPanCardFile/${userId}`),
+      uploadFile(aadhaarFile, `http://localhost:5000/api/user/addAadharCardFile/${userId}`),
+      uploadFile(bankPassFile, `http://localhost:5000/api/user/addBankPassbookFile/${userId}`),
     ]);
 
     setPanFile(null);

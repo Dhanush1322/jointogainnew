@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 
 import './DashboardPage.css';
 import KycForm from '../components/KycForm';
+import MyKycList from '../components/MyKycList';
 
 function Kyc() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -51,6 +52,7 @@ function Kyc() {
         <Navbar toggleSidebar={toggleSidebar} />
         <div style={{ marginTop: '100px', marginLeft }}>
           <KycForm />
+          <MyKycList />
         </div>
       </div>
     </div>

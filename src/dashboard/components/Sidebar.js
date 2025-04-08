@@ -43,8 +43,8 @@ const Sidebar = ({ handleLogout, isOpen }) => {
         </li>
         <hr className="sidebar-divider" />
         <li className="sidebar-item"><Link to="/Kyc"><User size={20} /> KYC</Link></li>
-        <hr className="sidebar-divider" />
-        <li className="sidebar-item"><Link to="/MyKyc"><User size={20} />My KYC </Link></li>
+        {/*<hr className="sidebar-divider" />
+        <li className="sidebar-item"><Link to="/MyKyc"><User size={20} />My KYC </Link></li>*/}
         <hr className="sidebar-divider" />
         <li className="sidebar-item" onClick={() => toggleMenu('team')}>
           <div className="sidebar-link">
@@ -53,7 +53,7 @@ const Sidebar = ({ handleLogout, isOpen }) => {
           {activeMenu === 'team' && (
             <ul className="submenu">
               <li className="submenu-item"><Link to="/AddNewMember"><Edit size={18} /> Add New Member</Link></li>
-              <li className="submenu-item"><Link to="/ViewMatrix"><Eye size={18} /> View Matrix</Link></li>
+            {/* <li className="submenu-item"><Link to="/ViewMatrix"><Eye size={18} /> View Matrix</Link></li>*/} 
               <li className="submenu-item"><Link to="/Dowline"><Eye size={18} /> Downline Member</Link></li>
             </ul>
           )}
@@ -61,12 +61,24 @@ const Sidebar = ({ handleLogout, isOpen }) => {
         <hr className="sidebar-divider" />
         <li className="sidebar-item" onClick={() => toggleMenu('account')}>
           <div className="sidebar-link">
-            <Home size={20} /> <span>Account</span>
+            <Home size={20} /> <span>My ROI Income</span>
           </div>
           {activeMenu === 'account' && (
             <ul className="submenu">
-              <li className="submenu-item"><Link to="/AccountTransaction"><Edit size={18} /> Account Transaction</Link></li>
-              <li className="submenu-item"><Link to="/WithdrawDetails"><Eye size={18} /> Withdraw Details</Link></li>
+              <li className="submenu-item"><Link to="/AccountTransaction"><Edit size={18} /> My ROI Details</Link></li>
+              <li className="submenu-item"><Link to="/WithdrawDetails"><Eye size={18} /> My ROI Paid</Link></li>
+            </ul>
+          )}
+        </li>
+        <hr className="sidebar-divider" />
+        <li className="sidebar-item" onClick={() => toggleMenu('Level')}>
+          <div className="sidebar-link">
+            <Home size={20} /> <span>My Level Income</span>
+          </div>
+          {activeMenu === 'Level' && (
+            <ul className="submenu">
+              <li className="submenu-item"><Link to="/MyLevel"><Edit size={18} /> My Level Details</Link></li>
+              <li className="submenu-item"><Link to="/MyLevelPaid"><Eye size={18} /> My Level Paid</Link></li>
             </ul>
           )}
         </li>

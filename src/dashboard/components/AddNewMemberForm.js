@@ -76,7 +76,7 @@ function AddNewMemberForm() {
     
       try {
         const response = await axios.post(
-          "http://jointogain.ap-1.evennode.com/api/user/addNewMember",
+          "http://localhost:5000/api/user/addNewMember",
           payload,
           {
             headers: {

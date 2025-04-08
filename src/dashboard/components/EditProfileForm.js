@@ -40,7 +40,7 @@ const EditProfileForm = () => {
   useEffect(() => {
     if (userId && token) {
       axios
-        .get(`http://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`, {
+        .get(`http://localhost:5000/api/user/getUser/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
@@ -109,7 +109,7 @@ const EditProfileForm = () => {
     console.log("Submitting Data:", updatedData);
   
     axios
-      .put(`http://jointogain.ap-1.evennode.com/api/user/updateUserProfile/${userId}`, updatedData, {
+      .put(`http://localhost:5000/api/user/updateUserProfile/${userId}`, updatedData, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {

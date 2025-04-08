@@ -47,7 +47,7 @@ function ChangePasswordForm() {
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
         const response = await axios.patch(
-          `http://jointogain.ap-1.evennode.com/api/user/editUserPassword/${userId}`,
+          `http://localhost:5000/api/user/editUserPassword/${userId}`,
           {
             oldPassword: values.oldPassword,
             newPassword: values.newPassword,

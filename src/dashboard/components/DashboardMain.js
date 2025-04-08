@@ -19,28 +19,56 @@ const DashboardMain = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem("accessToken"); // Replace with the actual token
-        const userId =  localStorage.getItem("_id"); // Replace with the actual token
+        const token = localStorage.getItem("accessToken");
+        const userId = localStorage.getItem("_id");
+
         const response = await axios.get(
-          `http://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`,
+          `http://localhost:5000/api/user/getUser/${userId}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Pass token in headers
+              Authorization: `Bearer ${token}`,
             },
           }
         );
 
         if (response.data.Status) {
           const userData = response.data.data.data;
+
+          // ROI Income calculation
+          let totalRoiPayoutAmount = 0;
+          userData.investment_info.forEach((investment) => {
+            const approvedCount = (investment.roi_payout_status || []).filter(
+              (payout) => payout.status === "Approved"
+            ).length;
+            const investmentTotal =
+              approvedCount * (investment.net_amount_per_month || 0);
+            totalRoiPayoutAmount += investmentTotal;
+          });
+
+          // Level Income calculation
+          let totalLevelIncome = 0;
+          userData.referral_payouts.forEach((payout) => {
+            if (payout.status === "Approved") {
+              totalLevelIncome += payout.amount || 0;
+            }
+          });
+
+          // Total Investment calculation
+          let totalInvestmentAmount = 0;
+          userData.investment_info.forEach((investment) => {
+            totalInvestmentAmount += investment.invest_amount || 0;
+          });
+
+        
           setDashboardData({
-            totalUsers: userData.referrals.length + 1, // Including the main user
-            roiIncome: `Rs. ${userData.investment_info.length > 0 ? userData.investment_info[0].profit_amount : 0}`,
-            levelIncome: "Rs. 0.00", // Adjust based on API response
-            totalEarnings: "Rs. 0.00", // Adjust based on API response
-            myInvestment: `Rs. ${userData.investment_info.length > 0 ? userData.investment_info[0].invest_amount : 0}`,
-            directReferrals: userData.no_of_direct_referrals,
-            totalWithdrawals: "Rs. 0.00", // Adjust based on API response
-            rank: userData.user_rank || "N/A",
+            totalUsers: userData.referrals.length + 1,
+            roiIncome: `Rs. ${totalRoiPayoutAmount.toFixed(2)}`,
+            levelIncome: `Rs. ${totalLevelIncome.toFixed(2)}`,
+            totalEarnings: `Rs. ${(totalRoiPayoutAmount + totalLevelIncome).toFixed(2)}`,
+            myInvestment: `Rs. ${totalInvestmentAmount.toFixed(2)}`,
+            directReferrals: userData.no_of_direct_referrals || 0,
+            totalWithdrawals: `Rs. ${(totalRoiPayoutAmount + totalLevelIncome).toFixed(2)}`,
+            rank: userData.user_rank_info?.[0]?.rank_of_user || "N/A",
           });
         }
       } catch (error) {
