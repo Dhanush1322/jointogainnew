@@ -40,7 +40,7 @@ function ReTopUpForm() {
   
     try {
       // Fetch user details
-      const kycResponse = await fetch(`http://localhost:5000/api/user/getUser/${userId}`, {
+      const kycResponse = await fetch(`https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -99,7 +99,7 @@ function ReTopUpForm() {
       }
   
       // Submit form
-      const response = await fetch(`http://localhost:5000/api/user/addTopUp/${userId}`, {
+      const response = await fetch(`https://jointogain.ap-1.evennode.com/api/user/addTopUp/${userId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

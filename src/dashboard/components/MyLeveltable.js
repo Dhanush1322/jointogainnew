@@ -14,7 +14,7 @@ const MyLeveltable = () => {
     if (!userId) return;
 
     // 1. Fetch user and their referral payouts
-    fetch(`http://localhost:5000/api/user/getUser/${userId}`)
+    fetch(`https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`)
       .then(res => res.json())
       .then(async (data) => {
         if (data.Status && data.data?.Status) {
@@ -27,7 +27,7 @@ const MyLeveltable = () => {
           const updatedPayouts = await Promise.all(
             pendingPayouts.map(async (payout) => {
               try {
-                const res = await fetch("http://localhost:5000/api/user/getReferralPayoutAmountOfInvestment", {
+                const res = await fetch("https://jointogain.ap-1.evennode.com/api/user/getReferralPayoutAmountOfInvestment", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({

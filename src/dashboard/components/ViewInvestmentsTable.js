@@ -23,7 +23,7 @@ function ViewInvestmentsTable({ userId }) {
     const fetchInvestmentData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`http://localhost:5000/api/user/getUser/${userId}`);
+        const res = await axios.get(`https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`);
         const userData = res.data?.data?.data;
 
         if (userData && userData.investment_info?.length > 0) {

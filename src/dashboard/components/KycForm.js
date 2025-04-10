@@ -55,9 +55,9 @@ function KycForm() {
     }
 
     await Promise.all([
-      uploadFile(panFile, `http://localhost:5000/api/user/addPanCardFile/${userId}`),
-      uploadFile(aadhaarFile, `http://localhost:5000/api/user/addAadharCardFile/${userId}`),
-      uploadFile(bankPassFile, `http://localhost:5000/api/user/addBankPassbookFile/${userId}`),
+      uploadFile(panFile, `https://jointogain.ap-1.evennode.com/api/user/addPanCardFile/${userId}`),
+      uploadFile(aadhaarFile, `https://jointogain.ap-1.evennode.com/api/user/addAadharCardFile/${userId}`),
+      uploadFile(bankPassFile, `https://jointogain.ap-1.evennode.com/api/user/addBankPassbookFile/${userId}`),
     ]);
 
     setPanFile(null);

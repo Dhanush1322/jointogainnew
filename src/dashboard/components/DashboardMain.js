@@ -23,7 +23,7 @@ const DashboardMain = () => {
         const userId = localStorage.getItem("_id");
 
         const response = await axios.get(
-          `http://localhost:5000/api/user/getUser/${userId}`,
+          `https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

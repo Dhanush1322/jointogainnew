@@ -20,7 +20,7 @@ function MyKycList() {
   const [dialogContent, setDialogContent] = useState(null);
 const userid = localStorage.getItem("_id");
 useEffect(() => {
-  fetch(`http://localhost:5000/api/user/getUser/${userid}`)
+  fetch(`https://jointogain.ap-1.evennode.com/api/user/getUser/${userid}`)
     .then((res) => res.json())
     .then((data) => {
       if (data.Status && data.data?.Status) {
@@ -42,9 +42,9 @@ useEffect(() => {
 
   const getFileUrl = (type, fileName) => {
     const baseUrls = {
-      aadhar: "http://localhost:5000/api/user/downloadAadharFile/",
-      pan: "http://localhost:5000/api/user/downloadPanFile/",
-      bank: "http://localhost:5000/api/user/downloadBankPassbookFile/",
+      aadhar: "https://jointogain.ap-1.evennode.com/api/user/downloadAadharFile/",
+      pan: "https://jointogain.ap-1.evennode.com/api/user/downloadPanFile/",
+      bank: "https://jointogain.ap-1.evennode.com/api/user/downloadBankPassbookFile/",
     };
     return `${baseUrls[type]}${fileName}`;
   };
@@ -66,7 +66,7 @@ useEffect(() => {
           </TableHead>
           <TableBody>
             {users
-              .filter((user) => user.kyc_status?.trim() === " " || user.kyc_status?.trim() === "Approved" || user.kyc_status?.trim() === "Rejected")
+              .filter((user) => user.kyc_status?.trim() === "" || user.kyc_status?.trim() === "Approved" || user.kyc_status?.trim() === "Rejected")
               .map((user) => (
                 <TableRow key={user._id}>
                   <TableCell>{user.name}</TableCell>

@@ -22,7 +22,7 @@ const AccountTransactionTable = () => {
         return;
       }
 
-      const response = await axios.get(`http://localhost:5000/api/user/getUser/${userId}`, {
+      const response = await axios.get(`https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }, // Pass token in headers
       });
 
