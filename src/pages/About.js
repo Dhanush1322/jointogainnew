@@ -11,7 +11,7 @@ function About() {
     <>
     <section  id="about" className="about-container">
       {/* Heading Section */}
-      <h2 className="about-heading">About Us</h2>
+      <h2 className="about-heading">About Usssss</h2>
       <h3 className="about-subheading">Who We Are</h3>
 
       {/* Content Section */}
