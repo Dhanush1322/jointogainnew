@@ -10,7 +10,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import Swal from "sweetalert2";
 
 function ReTopUpForm() {
   const [formData, setFormData] = useState({
@@ -18,7 +18,7 @@ function ReTopUpForm() {
     amount: "",
     utrNo: "",
     proof: null,
-    investDuration: "",  // Added for storing duration in months
+    investDuration: "",
   });
 
   const token = localStorage.getItem("accessToken");
@@ -35,27 +35,43 @@ function ReTopUpForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
     const { selectPlan, amount, utrNo, proof, investDuration } = formData;
-  
+
     try {
-      // Fetch user details
-      const kycResponse = await fetch(`https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
+      const kycResponse = await fetch(
+        `https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       const userData = await kycResponse.json();
+
+      const user = userData?.data?.data;
+
+      if (!user) {
+        Swal.fire({
+          icon: "error",
+          title: "User Not Found",
+          text: "Unable to retrieve user information.",
+        });
+        return;
+      }
+
       const {
         uploaded_pan_file,
         uploaded_aadher_file,
         uploaded_bank_passbook_file,
         kyc_status,
-      } = userData;
-  
-      // Validate KYC Files
-      if (!uploaded_pan_file || !uploaded_aadher_file || !uploaded_bank_passbook_file) {
+      } = user;
+
+      if (
+        !uploaded_pan_file ||
+        !uploaded_aadher_file ||
+        !uploaded_bank_passbook_file
+      ) {
         Swal.fire({
           icon: "warning",
           title: "KYC Incomplete",
@@ -63,8 +79,7 @@ function ReTopUpForm() {
         });
         return;
       }
-  
-      // Validate KYC Status
+
       if (kyc_status !== "Approved") {
         Swal.fire({
           icon: "warning",
@@ -73,8 +88,7 @@ function ReTopUpForm() {
         });
         return;
       }
-  
-      // Validate Long Term Duration
+
       if (
         selectPlan === "long term" &&
         (!investDuration || isNaN(investDuration) || investDuration <= 0)
@@ -86,29 +100,30 @@ function ReTopUpForm() {
         });
         return;
       }
-  
-      // Prepare FormData
+
       const formDataToSend = new FormData();
       formDataToSend.append("invest_type", selectPlan);
       formDataToSend.append("utr_no", utrNo);
       formDataToSend.append("invest_amount", amount);
       formDataToSend.append("file", proof);
-  
+
       if (selectPlan === "long term") {
         formDataToSend.append("invest_duration_in_month", investDuration);
       }
-  
-      // Submit form
-      const response = await fetch(`https://jointogain.ap-1.evennode.com/api/user/addTopUp/${userId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formDataToSend,
-      });
-  
+
+      const response = await fetch(
+        `https://jointogain.ap-1.evennode.com/api/user/addTopUp/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formDataToSend,
+        }
+      );
+
       const responseBody = await response.json();
-  
+
       if (response.ok) {
         Swal.fire({
           icon: "success",
@@ -129,7 +144,6 @@ function ReTopUpForm() {
           title: "Error",
           text: responseBody.message || "An error occurred, please try again.",
         });
-        console.error("Error details:", responseBody);
       }
     } catch (error) {
       console.error("Request failed:", error);
@@ -140,7 +154,7 @@ function ReTopUpForm() {
       });
     }
   };
-  
+
   return (
     <Container maxWidth="sm">
       <Box
@@ -175,6 +189,7 @@ function ReTopUpForm() {
               </Select>
             </FormControl>
           </Box>
+
           <Box sx={{ mb: 2 }}>
             <TextField
               fullWidth
@@ -185,6 +200,7 @@ function ReTopUpForm() {
               onChange={handleChange}
             />
           </Box>
+
           <Box sx={{ mb: 2 }}>
             <TextField
               fullWidth
@@ -194,6 +210,7 @@ function ReTopUpForm() {
               onChange={handleChange}
             />
           </Box>
+
           <Box sx={{ mb: 2 }}>
             <Button variant="outlined" component="label">
               Attach Proof
@@ -206,7 +223,6 @@ function ReTopUpForm() {
             )}
           </Box>
 
-          {/* Conditionally render the 'Invest Duration' field if Long Term is selected */}
           {formData.selectPlan === "long term" && (
             <Box sx={{ mb: 2 }}>
               <TextField
