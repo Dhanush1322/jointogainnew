@@ -87,9 +87,12 @@ const DashboardMain = () => {
     { title: "My Investment", count: dashboardData.myInvestment, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
     { title: "Direct Referrals", count: dashboardData.directReferrals, icon: <People fontSize="large" />, color: "#f5ee24" },
     { title: "Total Withdrawals", count: dashboardData.totalWithdrawals, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
-    { title: "Rank", count: dashboardData.rank, icon: <Star fontSize="large" />, color: "#f5ee24" },
+    
+    ...(dashboardData.rank !== "Default Rank" ? [{
+      title: "Rank", count: dashboardData.rank, icon: <Star fontSize="large" />, color: "#f5ee24"
+    }] : [])
   ];
-
+  
   return (
     <div className="dashboard-main">
       <Grid container spacing={3}>
