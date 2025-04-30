@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, Typography, Grid } from "@mui/material";
 import { People, MonetizationOn, AccountBalanceWallet, Star } from "@mui/icons-material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./DashboardMain.css";
 
 const DashboardMain = () => {
@@ -15,6 +16,8 @@ const DashboardMain = () => {
     totalWithdrawals: "Rs. 0.00",
     rank: "N/A",
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -34,7 +37,6 @@ const DashboardMain = () => {
         if (response.data.Status) {
           const userData = response.data.data.data;
 
-          // ROI Income calculation
           let totalRoiPayoutAmount = 0;
           userData.investment_info.forEach((investment) => {
             const approvedCount = (investment.roi_payout_status || []).filter(
@@ -45,7 +47,6 @@ const DashboardMain = () => {
             totalRoiPayoutAmount += investmentTotal;
           });
 
-          // Level Income calculation
           let totalLevelIncome = 0;
           userData.referral_payouts.forEach((payout) => {
             if (payout.status === "Approved") {
@@ -53,13 +54,11 @@ const DashboardMain = () => {
             }
           });
 
-          // Total Investment calculation
           let totalInvestmentAmount = 0;
           userData.investment_info.forEach((investment) => {
             totalInvestmentAmount += investment.invest_amount || 0;
           });
 
-        
           setDashboardData({
             totalUsers: userData.referrals.length + 1,
             roiIncome: `Rs. ${totalRoiPayoutAmount.toFixed(2)}`,
@@ -79,6 +78,14 @@ const DashboardMain = () => {
     fetchUserData();
   }, []);
 
+  const handleCardClick = (title) => {
+    if (title === "Next ROI Payout Amount") {
+      navigate("/AccountTransaction");
+    } else if (title === "Next Level Payout Amount") {
+      navigate("/MyLevel");
+    }
+  };
+
   const stats = [
     { title: "Total Users", count: dashboardData.totalUsers, icon: <People fontSize="large" />, color: "#f5ee24" },
     { title: "ROI Income", count: dashboardData.roiIncome, icon: <MonetizationOn fontSize="large" />, color: "#f5ee24" },
@@ -87,12 +94,13 @@ const DashboardMain = () => {
     { title: "My Investment", count: dashboardData.myInvestment, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
     { title: "Direct Referrals", count: dashboardData.directReferrals, icon: <People fontSize="large" />, color: "#f5ee24" },
     { title: "Total Withdrawals", count: dashboardData.totalWithdrawals, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
-    
+    { title: "Next ROI Payout Amount",  icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
+    { title: "Next Level Payout Amount",  icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
     ...(dashboardData.rank !== "Default Rank" ? [{
       title: "Rank", count: dashboardData.rank, icon: <Star fontSize="large" />, color: "#f5ee24"
     }] : [])
   ];
-  
+
   return (
     <div className="dashboard-main">
       <Grid container spacing={3}>
@@ -107,7 +115,9 @@ const DashboardMain = () => {
                 color: "#ffb901",
                 borderRadius: 3,
                 boxShadow: 3,
+                cursor: (stat.title === "Next ROI Payout Amount" || stat.title === "Next Level Payout Amount") ? "pointer" : "default"
               }}
+              onClick={() => handleCardClick(stat.title)}
             >
               {stat.icon}
               <CardContent>

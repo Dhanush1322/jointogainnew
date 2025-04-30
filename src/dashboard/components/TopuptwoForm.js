@@ -1,3 +1,5 @@
+
+import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import {
   Container,
@@ -12,7 +14,7 @@ import {
 } from "@mui/material";
 import Swal from "sweetalert2";
 
-function ReTopUpForm() {
+function TopuptwoForm() {
   const [formData, setFormData] = useState({
     selectPlan: "",
     amount: "",
@@ -22,7 +24,8 @@ function ReTopUpForm() {
   });
 
   const token = localStorage.getItem("accessToken");
-  const userId = localStorage.getItem("_id");
+  const userId = localStorage.getItem("newUserId");
+   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -49,17 +52,17 @@ function ReTopUpForm() {
       return;
     }
   
-    const formDataToSend = new FormData();
-    formDataToSend.append("invest_type", selectPlan);
-    formDataToSend.append("utr_no", utrNo);
-    formDataToSend.append("invest_amount", amount);
-    formDataToSend.append("file", proof);
-  
-    if (selectPlan === "long term") {
-      formDataToSend.append("invest_duration_in_month", investDuration);
-    }
-  
     try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("invest_type", selectPlan);
+      formDataToSend.append("utr_no", utrNo);
+      formDataToSend.append("invest_amount", amount);
+      formDataToSend.append("file", proof);
+  
+      if (selectPlan === "long term") {
+        formDataToSend.append("invest_duration_in_month", investDuration);
+      }
+  
       const response = await fetch(
         `https://jointogain.ap-1.evennode.com/api/user/addTopUp/${userId}`,
         {
@@ -86,7 +89,9 @@ function ReTopUpForm() {
             proof: null,
             investDuration: "",
           });
+          navigate("/AddNewMember");
         });
+        
       } else {
         Swal.fire({
           icon: "error",
@@ -200,4 +205,4 @@ function ReTopUpForm() {
   );
 }
 
-export default ReTopUpForm;
+export default TopuptwoForm;

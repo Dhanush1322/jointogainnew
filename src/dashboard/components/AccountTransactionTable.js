@@ -2,20 +2,23 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Pagination, Dialog, DialogContent,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Paper, Button, Pagination, Dialog, DialogContent, TextField, Box
 } from "@mui/material";
+import { CSVLink } from "react-csv";
 
 const AccountTransactionTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [withdrawData, setWithdrawData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const recordsPerPage = 10;
 
   const fetchData = async () => {
     try {
-      const userId = localStorage.getItem("_id"); // Retrieve user ID from localStorage
-      const token = localStorage.getItem("accessToken"); // Retrieve token from localStorage
+      const userId = localStorage.getItem("_id");
+      const token = localStorage.getItem("accessToken");
 
       if (!userId || !token) {
         Swal.fire("Error", "User not authenticated!", "error");
@@ -23,10 +26,11 @@ const AccountTransactionTable = () => {
       }
 
       const response = await axios.get(`https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` }, // Pass token in headers
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      const user = response.data.data.data; // Assuming API returns { data: user }
+      const user = response.data.data.data;
+
       const formattedData = user.investment_info?.flatMap((investment) => {
         const approvedPayoutsCount = investment.roi_payout_status?.filter(payout => payout.status === "Approved").length || 0;
         const remainingMonths = (investment.invest_duration_in_month || 0) - approvedPayoutsCount;
@@ -64,10 +68,15 @@ const AccountTransactionTable = () => {
     fetchData();
   }, []);
 
+  // Filtered records based on search term
+  const filteredData = withdrawData.filter((record) =>
+    record.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = withdrawData.slice(indexOfFirstRecord, indexOfLastRecord);
-  const totalPages = Math.ceil(withdrawData.length / recordsPerPage);
+  const currentRecords = filteredData.slice(indexOfFirstRecord, indexOfLastRecord);
+  const totalPages = Math.ceil(filteredData.length / recordsPerPage);
 
   const handleOpen = (image) => {
     setSelectedImage(image);
@@ -76,6 +85,42 @@ const AccountTransactionTable = () => {
 
   return (
     <Paper sx={{ padding: 2, margin: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
+        <TextField
+          label="Search by Name"
+          variant="outlined"
+          size="small"
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
+        />
+        <Button variant="contained" color="primary">
+          <CSVLink
+            filename="withdraw_request_data.csv"
+            data={filteredData}
+            headers={[
+              { label: "Name", key: "name" },
+              { label: "Invested Amount", key: "investedamount" },
+              { label: "Investment Type", key: "invest_type" },
+              { label: "Duration", key: "invest_duration_in_month" },
+              { label: "Remaining", key: "remainingmonth" },
+              { label: "Available Credit", key: "availableCredit" },
+              { label: "Amount Req", key: "amountReq" },
+              { label: "TDS", key: "tds" },
+              { label: "SC", key: "sc" },
+              { label: "Net Pay", key: "netPay" },
+              { label: "Date", key: "date" },
+              { label: "Payout Date", key: "payoutDate" },
+            ]}
+            style={{ textDecoration: "none", color: "white" }}
+          >
+            Export CSV
+          </CSVLink>
+        </Button>
+      </Box>
+
       <h3>Withdraw Request List</h3>
       <TableContainer component={Paper}>
         <Table>
@@ -127,7 +172,6 @@ const AccountTransactionTable = () => {
         sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}
       />
 
-      {/* Dialog for Viewing Bank Image */}
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogContent>
           {selectedImage && <img src={selectedImage} alt="Bank Proof" style={{ width: "100%", maxHeight: "500px" }} />}

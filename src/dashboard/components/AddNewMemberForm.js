@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   TextField,
@@ -23,6 +24,7 @@ import * as Yup from "yup";
 function AddNewMemberForm() {
   const [sponsorId, setSponsorId] = useState("");
   const [sponsorName, setSponsorName] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setSponsorId(localStorage.getItem("user_id") || "");
@@ -86,9 +88,11 @@ function AddNewMemberForm() {
           }
         );
     
-        const { user_profile_id, password } = response.data.data;
-
-       
+        const { user_profile_id, password, _id } = response.data.data;
+    
+        // ✅ Store the _id in localStorage
+        localStorage.setItem("newUserId", _id);
+    
         Swal.fire({
           icon: "success",
           title: "Member Added Successfully!",
@@ -98,10 +102,10 @@ function AddNewMemberForm() {
             <span style="color: red;"><b>Please take a screenshot of this information for your records.</b></span>
           `,
           confirmButtonText: "OK"
+        }).then(() => {
+          navigate("/Topuptwo");  // ✅ Navigate here
         });
         
-        
-    
         formik.resetForm();
       } catch (error) {
         console.error("Error adding member:", error);

@@ -8,7 +8,7 @@ function Banner() {
         {/* Text Content */}
         <div className="banner-text">
           <h1>Welcome to Join2Gain </h1>
-          <h2> Join - Reffer - Earn</h2>
+          <h2> Join - Refer - Earn</h2>
           <p>
             Join2Gain empowers investors by unlocking the potential of real asset investments. 
             These assets provide stability, predictable income, and a natural hedge against inflation—

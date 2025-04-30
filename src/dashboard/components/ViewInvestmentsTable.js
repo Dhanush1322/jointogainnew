@@ -74,7 +74,7 @@ function ViewInvestmentsTable({ userId }) {
               <TableRow sx={{ backgroundColor: '#0072a0' }}>
                 <TableCell sx={{ color: 'white' }}>SL</TableCell>
                 <TableCell sx={{ color: 'white' }}>Name</TableCell>
-                <TableCell sx={{ color: 'white' }}>Level</TableCell>
+          
                 <TableCell sx={{ color: 'white' }}>Investment Type</TableCell>
                 <TableCell sx={{ color: 'white' }}>Investment Amount</TableCell>
                 <TableCell sx={{ color: 'white' }}>Join Date</TableCell>
@@ -85,7 +85,7 @@ function ViewInvestmentsTable({ userId }) {
                 <TableRow key={inv.id}>
                   <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                   <TableCell>{inv.name}</TableCell>
-                  <TableCell>{inv.level}</TableCell>
+                
                   <TableCell>{inv.type}</TableCell>
                   <TableCell>₹{inv.amount}</TableCell>
                   <TableCell>{inv.joinDate}</TableCell>
