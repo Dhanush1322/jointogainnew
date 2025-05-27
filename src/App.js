@@ -20,6 +20,8 @@ import ViewInvestments from "./dashboard/pages/ViewInvestments";
 import MyLevel from "./dashboard/pages/MyLevel";
 import MyLevelPaid from "./dashboard/pages/MyLevelPaid";
 import Topuptwo from "./dashboard/pages/Topuptwo";
+import AddUserKyc from "./dashboard/pages/AddUserKyc";
+import AddBankDetails from "./dashboard/pages/AddBankDetails";
 const App = () => {
   return (
     <div className="app-container">
@@ -45,6 +47,8 @@ const App = () => {
           <Route path="/MyInvestments" element={<MyInvestments />} />
           <Route path="/ViewInvestments/:id" element={<ViewInvestments />} />
           <Route path="/Topuptwo" element={<Topuptwo />} />
+          <Route path="/AddUserKyc" element={<AddUserKyc />} />
+          <Route path="/AddBankDestils" element={<AddBankDetails />} />
        
         </Routes>
        

@@ -87,15 +87,14 @@ const DashboardMain = () => {
   };
 
   const stats = [
-    { title: "Total Users", count: dashboardData.totalUsers, icon: <People fontSize="large" />, color: "#f5ee24" },
     { title: "ROI Income", count: dashboardData.roiIncome, icon: <MonetizationOn fontSize="large" />, color: "#f5ee24" },
     { title: "Level Income", count: dashboardData.levelIncome, icon: <MonetizationOn fontSize="large" />, color: "#f5ee24" },
     { title: "Total Earning", count: dashboardData.totalEarnings, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
     { title: "My Investment", count: dashboardData.myInvestment, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
     { title: "Direct Referrals", count: dashboardData.directReferrals, icon: <People fontSize="large" />, color: "#f5ee24" },
     { title: "Total Withdrawals", count: dashboardData.totalWithdrawals, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
-    { title: "Next ROI Payout Amount",  icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
-    { title: "Next Level Payout Amount",  icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
+    { title: "Next ROI Payout Amount",  count: dashboardData.totalWithdrawals,icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
+    { title: "Next Level Payout Amount",  count: dashboardData.totalWithdrawals, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
     ...(dashboardData.rank !== "Default Rank" ? [{
       title: "Rank", count: dashboardData.rank, icon: <Star fontSize="large" />, color: "#f5ee24"
     }] : [])

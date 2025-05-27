@@ -103,7 +103,7 @@ function AddNewMemberForm() {
           `,
           confirmButtonText: "OK"
         }).then(() => {
-          navigate("/Topuptwo");  // ✅ Navigate here
+          navigate("/AddUserKyc");  // ✅ Navigate here
         });
         
         formik.resetForm();

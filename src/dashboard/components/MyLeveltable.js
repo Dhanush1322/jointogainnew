@@ -97,6 +97,9 @@ const MyLeveltable = () => {
     setPage(0);
   };
 
+  // Calculate total amount
+  const totalAmount = filteredPayouts.reduce((sum, payout) => sum + Number(payout.amount || 0), 0);
+
   return (
     <div style={{ padding: 16 }}>
       <Typography variant="h5" gutterBottom>
@@ -147,6 +150,11 @@ const MyLeveltable = () => {
           </TableBody>
         </Table>
 
+        {/* Display total amount */}
+        <p style={{ padding: '10px', fontWeight: 'bold' }}>
+          Total Amount: ₹ {totalAmount.toFixed(2)}
+        </p>
+
         <TablePagination
           component="div"
           count={filteredPayouts.length}
@@ -162,3 +170,4 @@ const MyLeveltable = () => {
 };
 
 export default MyLeveltable;
+
