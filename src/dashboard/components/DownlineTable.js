@@ -16,7 +16,8 @@ function DownlineTable() {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("accessToken");
-  const userId = selectedUser ? selectedUser._id : localStorage.getItem("_id");
+  const currentUserId = localStorage.getItem("_id");
+  const userId = selectedUser ? selectedUser._id : currentUserId;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,13 +50,23 @@ function DownlineTable() {
         const rootUser = result?.data?.data;
 
         if (rootUser?.referrals?.length > 0) {
-          const flattenedData = flattenReferrals(rootUser.referrals, 1);
+          let flattenedData = flattenReferrals(rootUser.referrals, 1);
+
+          // Exclude current user's own ID
+          flattenedData = flattenedData.filter(user => user._id !== currentUserId);
+
           setData(flattenedData);
           setFilteredData(flattenedData);
         } else {
-          rootUser.user_level = 0;
-          setData([rootUser]);
-          setFilteredData([rootUser]);
+          // If no referrals and this is not the current user, show the user
+          if (rootUser._id !== currentUserId) {
+            rootUser.user_level = 0;
+            setData([rootUser]);
+            setFilteredData([rootUser]);
+          } else {
+            setData([]);
+            setFilteredData([]);
+          }
         }
 
       } catch (error) {
@@ -66,7 +77,7 @@ function DownlineTable() {
     };
 
     fetchData();
-  }, [userId, token]);
+  }, [userId, token, currentUserId]);
 
   const handleSearch = (e) => {
     const value = e.target.value;

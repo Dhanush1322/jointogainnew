@@ -15,6 +15,7 @@ const DashboardMain = () => {
     directReferrals: 0,
     totalWithdrawals: "Rs. 0.00",
     rank: "N/A",
+    nextLevelPayout: "Rs. 0.00",
   });
 
   const navigate = useNavigate();
@@ -59,6 +60,54 @@ const DashboardMain = () => {
             totalInvestmentAmount += investment.invest_amount || 0;
           });
 
+          // ✅ Calculate Nearest Upcoming Pending Level Payout
+          const now = new Date();
+          const pendingPayoutsMap = new Map();
+
+          userData.referral_payouts.forEach((payout) => {
+            if (payout.status === "Pending") {
+              const payoutDate = new Date(payout.payout_date);
+              if (payoutDate > now) {
+                const key = `${payoutDate.getFullYear()}-${payoutDate.getMonth()}`; // YYYY-MM
+                const currentAmount = pendingPayoutsMap.get(key) || 0;
+                pendingPayoutsMap.set(key, currentAmount + (payout.amount || 0));
+              }
+            }
+          });
+
+          let nearestMonthAmount = 0;
+          let nearestMonthText = "";
+
+          if (pendingPayoutsMap.size > 0) {
+            const sortedKeys = [...pendingPayoutsMap.keys()].sort();
+            const [year, month] = sortedKeys[0].split("-");
+            const amount = pendingPayoutsMap.get(sortedKeys[0]);
+            const date = new Date(parseInt(year), parseInt(month));
+            const monthName = date.toLocaleString("default", { month: "long" });
+            nearestMonthAmount = amount;
+            nearestMonthText = `${monthName} ${year}`;
+          }
+          // ✅ Calculate Nearest Upcoming Pending ROI Payout
+          const roiPayoutMap = new Map();
+
+          userData.investment_info.forEach((investment) => {
+            (investment.roi_payout_status || []).forEach((payout) => {
+              const payoutDate = new Date(payout.payout_date);
+              if (payout.status === "Pending" && payoutDate > now) {
+                const key = `${payoutDate.getFullYear()}-${payoutDate.getMonth()}`; // YYYY-MM
+                const currentAmount = roiPayoutMap.get(key) || 0;
+                roiPayoutMap.set(key, currentAmount + (investment.net_amount_per_month || 0));
+              }
+            });
+          });
+
+          let nearestRoiAmount = 0;
+          if (roiPayoutMap.size > 0) {
+            const sortedRoiKeys = [...roiPayoutMap.keys()].sort();
+            const nearestKey = sortedRoiKeys[0];
+            nearestRoiAmount = roiPayoutMap.get(nearestKey);
+          }
+
           setDashboardData({
             totalUsers: userData.referrals.length + 1,
             roiIncome: `Rs. ${totalRoiPayoutAmount.toFixed(2)}`,
@@ -68,7 +117,10 @@ const DashboardMain = () => {
             directReferrals: userData.no_of_direct_referrals || 0,
             totalWithdrawals: `Rs. ${(totalRoiPayoutAmount + totalLevelIncome).toFixed(2)}`,
             rank: userData.user_rank_info?.[0]?.rank_of_user || "N/A",
+            nextLevelPayout: nearestMonthAmount > 0 ? `Rs. ${nearestMonthAmount.toFixed(2)}` : "Rs. 0.00",
+            nextRoiPayout: nearestRoiAmount > 0 ? `Rs. ${nearestRoiAmount.toFixed(2)}` : "Rs. 0.00", // 👈 Add this line
           });
+
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -93,8 +145,8 @@ const DashboardMain = () => {
     { title: "My Investment", count: dashboardData.myInvestment, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
     { title: "Direct Referrals", count: dashboardData.directReferrals, icon: <People fontSize="large" />, color: "#f5ee24" },
     { title: "Total Withdrawals", count: dashboardData.totalWithdrawals, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
-    { title: "Next ROI Payout Amount",  count: dashboardData.totalWithdrawals,icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
-    { title: "Next Level Payout Amount",  count: dashboardData.totalWithdrawals, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
+    { title: "Next ROI Payout Amount", count: dashboardData.nextRoiPayout, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
+    { title: "Next Level Payout Amount", count: dashboardData.nextLevelPayout, icon: <AccountBalanceWallet fontSize="large" />, color: "#f5ee24" },
     ...(dashboardData.rank !== "Default Rank" ? [{
       title: "Rank", count: dashboardData.rank, icon: <Star fontSize="large" />, color: "#f5ee24"
     }] : [])

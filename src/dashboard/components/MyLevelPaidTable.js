@@ -1,60 +1,118 @@
+
 import React, { useEffect, useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Paper, Typography, TablePagination, Chip
+  TableRow, Paper, Typography, TablePagination, Chip, TextField, Button
 } from '@mui/material';
+import { Download as DownloadIcon, Search as SearchIcon } from '@mui/icons-material';
 
 const MyLevelPaidTable = () => {
   const [referralPayouts, setReferralPayouts] = useState([]);
+  const [filteredPayouts, setFilteredPayouts] = useState([]);
+  const [searchDate, setSearchDate] = useState('');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const userId = localStorage.getItem('_id');
 
-  useEffect(() => {
-    if (!userId) return;
+ useEffect(() => {
+  if (!userId) return;
 
-    // 1. Fetch user and their referral payouts
-    fetch(`https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`)
-      .then(res => res.json())
-      .then(async (data) => {
-        if (data.Status && data.data?.Status) {
-          const payouts = data.data.data?.referral_payouts || [];
+  fetch(`https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`)
+    .then(res => res.json())
+    .then(async (data) => {
+      if (data.Status && data.data?.Status) {
+        const user = data.data.data;
+        const payouts = user?.referral_payouts || [];
+        const pendingPayouts = payouts.filter(p => p.status === "Approved");
 
-          // Filter only "Pending"
-          const pendingPayouts = payouts.filter(p => p.status === "Approved");
+        const updatedPayouts = await Promise.all(
+          pendingPayouts.map(async (payout) => {
+            let fromUserName = "N/A";
 
-          // 2. Fetch amount for each referral payout
-          const updatedPayouts = await Promise.all(
-            pendingPayouts.map(async (payout) => {
-              try {
-                const res = await fetch("https://jointogain.ap-1.evennode.com/api/user/getReferralPayoutAmountOfInvestment", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    user_id: userId,
-                    investment_id: payout.investment_id,
-                    referral_payout_id: payout._id
-                  })
-                });
-                const result = await res.json();
-                return {
-                  ...payout,
-                  amount: result.amount || payout.amount // fallback to existing amount
-                };
-              } catch (err) {
-                console.error("Error fetching payout amount:", err);
-                return payout; // fallback
+            // Match investment_id with user's referrals
+            if (Array.isArray(user.referrals)) {
+              for (const referral of user.referrals) {
+                if (Array.isArray(referral.investment_info)) {
+                  const match = referral.investment_info.find(info => info._id === payout.investment_id);
+                  if (match) {
+                    fromUserName = referral.name || "N/A";
+                    break;
+                  }
+                }
               }
-            })
-          );
+            }
 
-          setReferralPayouts(updatedPayouts);
-        }
-      })
-      .catch(err => {
-        console.error("Failed to fetch user details:", err);
-      });
-  }, [userId]);
+            // Fetch updated payout amount
+            try {
+              const res = await fetch("https://jointogain.ap-1.evennode.com/api/user/getReferralPayoutAmountOfInvestment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  user_id: userId,
+                  investment_id: payout.investment_id,
+                  referral_payout_id: payout._id
+                })
+              });
+
+              const result = await res.json();
+              return {
+                ...payout,
+                amount: result.amount || payout.amount,
+                fromUserName: fromUserName
+              };
+            } catch (err) {
+              console.error("Error fetching payout amount:", err);
+              return {
+                ...payout,
+                fromUserName: fromUserName
+              };
+            }
+          })
+        );
+
+        setReferralPayouts(updatedPayouts);
+        setFilteredPayouts(updatedPayouts);
+      }
+    })
+    .catch(err => {
+      console.error("Failed to fetch user details:", err);
+    });
+}, [userId]);
+
+  const handleSearch = () => {
+    if (!searchDate) {
+      setFilteredPayouts(referralPayouts);
+      return;
+    }
+
+    const filtered = referralPayouts.filter(payout =>
+      new Date(payout.payout_date).toLocaleDateString().includes(searchDate)
+    );
+    setFilteredPayouts(filtered);
+    setPage(0);
+  };
+
+  const handleExport = () => {
+    const csvRows = [
+      ["S.N", "Payout Date", "Amount", "Status"],
+      ...filteredPayouts.map((payout, index) => [
+        index + 1,
+        new Date(payout.payout_date).toLocaleDateString(),
+        payout.amount,
+        payout.status
+      ])
+    ];
+
+    const csvContent = "data:text/csv;charset=utf-8," + csvRows.map(row => row.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "referral_payouts.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const handleChangePage = (event, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (event) => {
@@ -62,43 +120,69 @@ const MyLevelPaidTable = () => {
     setPage(0);
   };
 
+  // Calculate total amount
+  const totalAmount = filteredPayouts.reduce((sum, payout) => sum + Number(payout.amount || 0), 0);
+
   return (
     <div style={{ padding: 16 }}>
       <Typography variant="h5" gutterBottom>
-        My Paid Referral Payouts
+        My Pending Referral Payouts
       </Typography>
+
+      {/* Search and Export */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+        <TextField
+          label="Search by Date (e.g. 4/30/2025)"
+          variant="outlined"
+          size="small"
+          value={searchDate}
+          onChange={(e) => setSearchDate(e.target.value)}
+          InputProps={{
+            endAdornment: <SearchIcon onClick={handleSearch} style={{ cursor: 'pointer' }} />
+          }}
+        />
+
+        <Button variant="contained" color="primary" startIcon={<DownloadIcon />} onClick={handleExport}>
+          Export CSV
+        </Button>
+      </div>
 
       <TableContainer component={Paper}>
         <Table>
           <TableHead style={{ backgroundColor: '#f0f0f0' }}>
             <TableRow>
               <TableCell><strong>S.N</strong></TableCell>
-            
+               <TableCell><strong>From Name</strong></TableCell>
               <TableCell><strong>Payout Date</strong></TableCell>
               <TableCell><strong>Amount</strong></TableCell>
               <TableCell><strong>Status</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {referralPayouts
+            {filteredPayouts
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((payout, index) => (
                 <TableRow key={payout._id}>
                   <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                 
+                 <TableCell>{payout.fromUserName || "N/A"}</TableCell>
                   <TableCell>{new Date(payout.payout_date).toLocaleDateString()}</TableCell>
                   <TableCell>₹ {payout.amount}</TableCell>
                   <TableCell>
-                    <Chip label="Approved" color="success" variant="outlined" />
+                    <Chip label="Approved" color="warning" variant="outlined" />
                   </TableCell>
                 </TableRow>
               ))}
           </TableBody>
         </Table>
 
+        {/* Display total amount */}
+        <p style={{ padding: '10px', fontWeight: 'bold' }}>
+          Total Amount: ₹ {totalAmount.toFixed(2)}
+        </p>
+
         <TablePagination
           component="div"
-          count={referralPayouts.length}
+          count={filteredPayouts.length}
           page={page}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
@@ -111,3 +195,4 @@ const MyLevelPaidTable = () => {
 };
 
 export default MyLevelPaidTable;
+

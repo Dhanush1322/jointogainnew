@@ -13,48 +13,70 @@ const MyLeveltable = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const userId = localStorage.getItem('_id');
 
-  useEffect(() => {
-    if (!userId) return;
+ useEffect(() => {
+  if (!userId) return;
 
-    fetch(`https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`)
-      .then(res => res.json())
-      .then(async (data) => {
-        if (data.Status && data.data?.Status) {
-          const payouts = data.data.data?.referral_payouts || [];
-          const pendingPayouts = payouts.filter(p => p.status === "Pending");
+  fetch(`https://jointogain.ap-1.evennode.com/api/user/getUser/${userId}`)
+    .then(res => res.json())
+    .then(async (data) => {
+      if (data.Status && data.data?.Status) {
+        const user = data.data.data;
+        const payouts = user?.referral_payouts || [];
+        const pendingPayouts = payouts.filter(p => p.status === "Pending");
 
-          const updatedPayouts = await Promise.all(
-            pendingPayouts.map(async (payout) => {
-              try {
-                const res = await fetch("https://jointogain.ap-1.evennode.com/api/user/getReferralPayoutAmountOfInvestment", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    user_id: userId,
-                    investment_id: payout.investment_id,
-                    referral_payout_id: payout._id
-                  })
-                });
-                const result = await res.json();
-                return {
-                  ...payout,
-                  amount: result.amount || payout.amount
-                };
-              } catch (err) {
-                console.error("Error fetching payout amount:", err);
-                return payout;
+        const updatedPayouts = await Promise.all(
+          pendingPayouts.map(async (payout) => {
+            let fromUserName = "N/A";
+
+            // Match investment_id with user's referrals
+            if (Array.isArray(user.referrals)) {
+              for (const referral of user.referrals) {
+                if (Array.isArray(referral.investment_info)) {
+                  const match = referral.investment_info.find(info => info._id === payout.investment_id);
+                  if (match) {
+                    fromUserName = referral.name || "N/A";
+                    break;
+                  }
+                }
               }
-            })
-          );
+            }
 
-          setReferralPayouts(updatedPayouts);
-          setFilteredPayouts(updatedPayouts);
-        }
-      })
-      .catch(err => {
-        console.error("Failed to fetch user details:", err);
-      });
-  }, [userId]);
+            // Fetch updated payout amount
+            try {
+              const res = await fetch("https://jointogain.ap-1.evennode.com/api/user/getReferralPayoutAmountOfInvestment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  user_id: userId,
+                  investment_id: payout.investment_id,
+                  referral_payout_id: payout._id
+                })
+              });
+
+              const result = await res.json();
+              return {
+                ...payout,
+                amount: result.amount || payout.amount,
+                fromUserName: fromUserName
+              };
+            } catch (err) {
+              console.error("Error fetching payout amount:", err);
+              return {
+                ...payout,
+                fromUserName: fromUserName
+              };
+            }
+          })
+        );
+
+        setReferralPayouts(updatedPayouts);
+        setFilteredPayouts(updatedPayouts);
+      }
+    })
+    .catch(err => {
+      console.error("Failed to fetch user details:", err);
+    });
+}, [userId]);
 
   const handleSearch = () => {
     if (!searchDate) {
@@ -129,6 +151,7 @@ const MyLeveltable = () => {
           <TableHead style={{ backgroundColor: '#f0f0f0' }}>
             <TableRow>
               <TableCell><strong>S.N</strong></TableCell>
+               <TableCell><strong>From Name</strong></TableCell>
               <TableCell><strong>Payout Date</strong></TableCell>
               <TableCell><strong>Amount</strong></TableCell>
               <TableCell><strong>Status</strong></TableCell>
@@ -140,6 +163,7 @@ const MyLeveltable = () => {
               .map((payout, index) => (
                 <TableRow key={payout._id}>
                   <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                 <TableCell>{payout.fromUserName || "N/A"}</TableCell>
                   <TableCell>{new Date(payout.payout_date).toLocaleDateString()}</TableCell>
                   <TableCell>₹ {payout.amount}</TableCell>
                   <TableCell>

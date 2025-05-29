@@ -1,8 +1,8 @@
-
 import React, { useState } from "react";
 import { Container, Box, Typography, Button } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+
 function AddUserKycForm() {
   const navigate = useNavigate();
   const [panFile, setPanFile] = useState(null);
@@ -40,46 +40,51 @@ function AddUserKycForm() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!panFile || !bankPassFile || !aadhaarFile) {
-    Swal.fire({
-      icon: "warning",
-      title: "Missing Files",
-      text: "Please upload all required documents (PAN, Bank Passbook, Aadhaar) before submitting.",
-    });
-    return;
-  }
+    if (!panFile || !bankPassFile || !aadhaarFile) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Files",
+        text: "Please upload all required documents (PAN, Bank Passbook, Aadhaar) before submitting.",
+      });
+      return;
+    }
 
-  try {
-    await Promise.all([
-      uploadFile(panFile, `https://jointogain.ap-1.evennode.com/api/user/addPanCardFile/${userId}`),
-      uploadFile(aadhaarFile, `https://jointogain.ap-1.evennode.com/api/user/addAadharCardFile/${userId}`),
-      uploadFile(bankPassFile, `https://jointogain.ap-1.evennode.com/api/user/addBankPassbookFile/${userId}`),
-    ]);
+    try {
+      await Promise.all([
+        uploadFile(panFile, `https://jointogain.ap-1.evennode.com/api/user/addPanCardFile/${userId}`),
+        uploadFile(aadhaarFile, `https://jointogain.ap-1.evennode.com/api/user/addAadharCardFile/${userId}`),
+        uploadFile(bankPassFile, `https://jointogain.ap-1.evennode.com/api/user/addBankPassbookFile/${userId}`),
+      ]);
 
-    setPanFile(null);
-    setBankPassFile(null);
-    setAadhaarFile(null);
+      setPanFile(null);
+      setBankPassFile(null);
+      setAadhaarFile(null);
 
-    Swal.fire({
-      title: "Success!",
-      text: "Files uploaded successfully!",
-      icon: "success",
-      confirmButtonText: "Continue",
-    }).then(() => {
-      navigate("/AddBankDestils");
-    });
+      Swal.fire({
+        title: "Success!",
+        text: "Files uploaded successfully!",
+        icon: "success",
+        confirmButtonText: "Continue",
+      }).then(() => {
+        navigate("/AddBankDestils");
+      });
 
-  } catch (error) {
-    console.error("Error during submission:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Submission Failed",
-      text: error.message,
-    });
-  }
-};
+    } catch (error) {
+      console.error("Error during submission:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Submission Failed",
+        text: error.message,
+      });
+    }
+  };
+
+  // Function to handle skip
+  const handleSkip = () => {
+    navigate("/AddBankDestils"); // Replace with the page you want to go to on skip
+  };
 
   return (
     <Container maxWidth="sm">
@@ -131,6 +136,16 @@ function AddUserKycForm() {
             Submit
           </Button>
         </form>
+
+        {/* Skip Button */}
+        <Button
+          variant="text"
+          fullWidth
+          sx={{ mt: 2, color: "#0072a0", textTransform: "none" }}
+          onClick={handleSkip}
+        >
+          Skip for now
+        </Button>
       </Box>
     </Container>
   );
