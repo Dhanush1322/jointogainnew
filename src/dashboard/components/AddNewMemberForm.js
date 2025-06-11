@@ -120,144 +120,152 @@ function AddNewMemberForm() {
       });
 
   return (
-    <Container maxWidth={false} disableGutters sx={{ mb: "30px", minHeight: "100vh" }}>
-      <Box sx={{ width: "100%", p: 4, boxShadow: 3, borderRadius: 2, bgcolor: "#fff" }}>
-        <Typography variant="h5" align="center" gutterBottom>
-          Add New Member
-        </Typography>
+  <Container maxWidth={false} disableGutters sx={{ mb: "30px", minHeight: "100vh", background: "#f9f9f9", p: 2 }}>
+  <Box sx={{ maxWidth: "1100px", mx: "auto", p: 4, boxShadow: 3, borderRadius: 2, bgcolor: "#fff" }}>
+    <Typography variant="h5" align="center" gutterBottom>
+      Add New Member
+    </Typography>
 
-        <form onSubmit={formik.handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle1">Sponsor ID</Typography>
-              <TextField fullWidth value={sponsorId} disabled sx={{ mb: 2 }} />
-              <Typography variant="subtitle1">Sponsor Name</Typography>
-              <TextField fullWidth value={sponsorName} disabled sx={{ mb: 2 }} />
+    <form onSubmit={formik.handleSubmit}>
+      <Grid container spacing={2}>
+        {/* Sponsor ID and Name in one row */}
+        <Grid item xs={12} md={6}>
+          <Typography variant="subtitle1">Sponsor ID</Typography>
+          <TextField fullWidth value={sponsorId} disabled sx={{ mb: 2 }} />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Typography variant="subtitle1">Sponsor Name</Typography>
+          <TextField fullWidth value={sponsorName} disabled sx={{ mb: 2 }} />
+        </Grid>
 
-              <TextField
-                fullWidth
-                label="Name *"
-                {...formik.getFieldProps("name")}
-                error={formik.touched.name && Boolean(formik.errors.name)}
-                helperText={formik.touched.name && formik.errors.name}
-                sx={{ mb: 2 }}
-              />
+        {/* Left Column */}
+        <Grid item xs={12} md={6}>
+          <TextField
+            fullWidth
+            label="Name *"
+            {...formik.getFieldProps("name")}
+            error={formik.touched.name && Boolean(formik.errors.name)}
+            helperText={formik.touched.name && formik.errors.name}
+            sx={{ mb: 2 }}
+          />
 
-              <FormControl component="fieldset" sx={{ mb: 2 }}>
-                <FormLabel component="legend">Gender *</FormLabel>
-                <RadioGroup row {...formik.getFieldProps("gender")} name="gender">
-                  <FormControlLabel value="male" control={<Radio />} label="Male" />
-                  <FormControlLabel value="female" control={<Radio />} label="Female" />
-                </RadioGroup>
-              </FormControl>
+          <FormControl component="fieldset" sx={{ mb: 2 }}>
+            <FormLabel component="legend">Gender *</FormLabel>
+            <RadioGroup row {...formik.getFieldProps("gender")} name="gender">
+              <FormControlLabel value="male" control={<Radio />} label="Male" />
+              <FormControlLabel value="female" control={<Radio />} label="Female" />
+            </RadioGroup>
+          </FormControl>
 
-              <TextField
-                fullWidth
-                label="Email"
-                {...formik.getFieldProps("email")}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-                sx={{ mb: 2 }}
-              />
+          <TextField
+            fullWidth
+            label="Email"
+            {...formik.getFieldProps("email")}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
+            sx={{ mb: 2 }}
+          />
 
-              <TextField
-                fullWidth
-                label="Mobile Number *"
-                {...formik.getFieldProps("phone_no")}
-                error={formik.touched.phone_no && Boolean(formik.errors.phone_no)}
-                helperText={formik.touched.phone_no && formik.errors.phone_no}
-                sx={{ mb: 2 }}
-              />
+          <TextField
+            fullWidth
+            label="Mobile Number *"
+            {...formik.getFieldProps("phone_no")}
+            error={formik.touched.phone_no && Boolean(formik.errors.phone_no)}
+            helperText={formik.touched.phone_no && formik.errors.phone_no}
+            sx={{ mb: 2 }}
+          />
 
-              <Typography variant="subtitle1">Date of Birth</Typography>
-              <TextField
-                fullWidth
-                type="date"
-                {...formik.getFieldProps("date_of_birth")}
-                sx={{ mb: 2 }}
-              />
-            </Grid>
+          <Typography variant="subtitle1">Date of Birth</Typography>
+          <TextField
+            fullWidth
+            type="date"
+            {...formik.getFieldProps("date_of_birth")}
+            sx={{ mb: 2 }}
+          />
+        </Grid>
 
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Address *"
-                {...formik.getFieldProps("address")}
-                error={formik.touched.address && Boolean(formik.errors.address)}
-                helperText={formik.touched.address && formik.errors.address}
-                sx={{ mb: 2 }}
-              />
+        {/* Right Column */}
+        <Grid item xs={12} md={6}>
+          <TextField
+            fullWidth
+            label="Address *"
+            {...formik.getFieldProps("address")}
+            error={formik.touched.address && Boolean(formik.errors.address)}
+            helperText={formik.touched.address && formik.errors.address}
+            sx={{ mb: 2 }}
+          />
 
-              <TextField
-                fullWidth
-                label="City *"
-                {...formik.getFieldProps("city")}
-                error={formik.touched.city && Boolean(formik.errors.city)}
-                helperText={formik.touched.city && formik.errors.city}
-                sx={{ mb: 2 }}
-              />
+          <TextField
+            fullWidth
+            label="City *"
+            {...formik.getFieldProps("city")}
+            error={formik.touched.city && Boolean(formik.errors.city)}
+            helperText={formik.touched.city && formik.errors.city}
+            sx={{ mb: 2 }}
+          />
 
-              <FormControl fullWidth sx={{ mb: 2 }}>
-                <Typography variant="subtitle1">State *</Typography>
-                <Select
-                  name="state"
-                  value={formik.values.state}
-                  onChange={formik.handleChange}
-                  error={formik.touched.state && Boolean(formik.errors.state)}
-                >
-                  <MenuItem value="Karnataka">Karnataka</MenuItem>
-                  <MenuItem value="Tamil Nadu">Tamil Nadu</MenuItem>
-                  <MenuItem value="Kerala">Kerala</MenuItem>
-                </Select>
-              </FormControl>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <Typography variant="subtitle1">State *</Typography>
+            <Select
+              name="state"
+              value={formik.values.state}
+              onChange={formik.handleChange}
+              error={formik.touched.state && Boolean(formik.errors.state)}
+            >
+              <MenuItem value="Karnataka">Karnataka</MenuItem>
+              <MenuItem value="Tamil Nadu">Tamil Nadu</MenuItem>
+              <MenuItem value="Kerala">Kerala</MenuItem>
+            </Select>
+          </FormControl>
 
-              <TextField
-                fullWidth
-                label="Pan Number *"
-                {...formik.getFieldProps("pan_number")}
-                error={formik.touched.pan_number && Boolean(formik.errors.pan_number)}
-                helperText={formik.touched.pan_number && formik.errors.pan_number}
-                sx={{ mb: 2 }}
-              />
+          <TextField
+            fullWidth
+            label="Pan Number *"
+            {...formik.getFieldProps("pan_number")}
+            error={formik.touched.pan_number && Boolean(formik.errors.pan_number)}
+            helperText={formik.touched.pan_number && formik.errors.pan_number}
+            sx={{ mb: 2 }}
+          />
 
-              <TextField
-                fullWidth
-                label="Aadhar Number *"
-                {...formik.getFieldProps("aadhar_number")}
-                error={formik.touched.aadhar_number && Boolean(formik.errors.aadhar_number)}
-                helperText={formik.touched.aadhar_number && formik.errors.aadhar_number}
-                sx={{ mb: 2 }}
-              />
+          <TextField
+            fullWidth
+            label="Aadhar Number *"
+            {...formik.getFieldProps("aadhar_number")}
+            error={formik.touched.aadhar_number && Boolean(formik.errors.aadhar_number)}
+            helperText={formik.touched.aadhar_number && formik.errors.aadhar_number}
+            sx={{ mb: 2 }}
+          />
 
-              <TextField
-                fullWidth
-                label="Nominee Name *"
-                {...formik.getFieldProps("nominee_name")}
-                error={formik.touched.nominee_name && Boolean(formik.errors.nominee_name)}
-                helperText={formik.touched.nominee_name && formik.errors.nominee_name}
-                sx={{ mb: 2 }}
-              />
+          <TextField
+            fullWidth
+            label="Nominee Name *"
+            {...formik.getFieldProps("nominee_name")}
+            error={formik.touched.nominee_name && Boolean(formik.errors.nominee_name)}
+            helperText={formik.touched.nominee_name && formik.errors.nominee_name}
+            sx={{ mb: 2 }}
+          />
 
-              <TextField
-                fullWidth
-                label="Nominee Aadhar Number *"
-                {...formik.getFieldProps("nominee_aadhar_number")}
-                error={formik.touched.nominee_aadhar_number && Boolean(formik.errors.nominee_aadhar_number)}
-                helperText={formik.touched.nominee_aadhar_number && formik.errors.nominee_aadhar_number}
-                sx={{ mb: 2 }}
-              />
+          <TextField
+            fullWidth
+            label="Nominee Aadhar Number *"
+            {...formik.getFieldProps("nominee_aadhar_number")}
+            error={formik.touched.nominee_aadhar_number && Boolean(formik.errors.nominee_aadhar_number)}
+            helperText={formik.touched.nominee_aadhar_number && formik.errors.nominee_aadhar_number}
+            sx={{ mb: 2 }}
+          />
 
-              <TextField
-                fullWidth
-                label="Nominee Relationship *"
-                {...formik.getFieldProps("nominee_relationship")}
-                error={formik.touched.nominee_relationship && Boolean(formik.errors.nominee_relationship)}
-                helperText={formik.touched.nominee_relationship && formik.errors.nominee_relationship}
-                sx={{ mb: 2 }}
-              />
-            </Grid>
-          </Grid>
+          <TextField
+            fullWidth
+            label="Nominee Relationship *"
+            {...formik.getFieldProps("nominee_relationship")}
+            error={formik.touched.nominee_relationship && Boolean(formik.errors.nominee_relationship)}
+            helperText={formik.touched.nominee_relationship && formik.errors.nominee_relationship}
+            sx={{ mb: 2 }}
+          />
+        </Grid>
 
+        {/* Terms and Submit */}
+        <Grid item xs={12}>
           <FormControlLabel
             control={
               <Checkbox
@@ -273,14 +281,18 @@ function AddNewMemberForm() {
               {formik.errors.agree}
             </Typography>
           )}
+        </Grid>
 
+        <Grid item xs={12}>
           <Button fullWidth type="submit" variant="contained" color="primary" sx={{ mt: 2, background: "#1a1f36" }}>
             Submit
           </Button>
-        </form>
-      </Box>
-    </Container>
-  );
+        </Grid>
+      </Grid>
+    </form>
+  </Box>
+</Container>
+ );
 }
 
 export default AddNewMemberForm;

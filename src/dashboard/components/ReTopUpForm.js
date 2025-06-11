@@ -91,7 +91,7 @@ function ReTopUpForm() {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: responseBody.message || "An error occurred, please try again.",
+          text: responseBody.error || "An error occurred, please try again.",
         });
       }
     } catch (error) {
