@@ -42,9 +42,9 @@ useEffect(() => {
 
   const getFileUrl = (type, fileName) => {
     const baseUrls = {
-      aadhar: "https://jointogain.ap-1.evennode.com/api/user/downloadAadharFile/",
-      pan: "https://jointogain.ap-1.evennode.com/api/user/downloadPanFile/",
-      bank: "https://jointogain.ap-1.evennode.com/api/user/downloadBankPassbookFile/",
+      aadhar: "https://jointogain.ap-1.evennode.com/api/user/downloadAadharFile?fileUrl=",
+      pan: "https://jointogain.ap-1.evennode.com/api/user/downloadPanFile?fileUrl=",
+      bank: "https://jointogain.ap-1.evennode.com/api/user/downloadBankPassbookFile?fileUrl=",
     };
     return `${baseUrls[type]}${fileName}`;
   };
